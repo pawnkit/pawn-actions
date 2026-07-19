@@ -91,7 +91,7 @@ tar -czf "$temporary/windows.tar.gz" -C "$temporary/windows" pawn.exe
 export FIXTURE_ARCHIVE="$temporary/windows.tar.gz"
 export PAWN_CACHE_HIT="false"
 export PAWN_INSTALL_DIR="$temporary/windows-install"
-export PAWN_SHA256="$(digest "$temporary/windows.tar.gz")"
+PAWN_SHA256="$(digest "$temporary/windows.tar.gz")"
 export RUNNER_OS="Windows"
 "$root/setup/install.sh"
 test -x "$temporary/windows-install/pawn.exe"
@@ -100,7 +100,7 @@ export RUNNER_OS="Linux"
 export FIXTURE_ARCHIVE="$temporary/unsafe.tar.gz"
 export PAWN_CACHE_HIT="false"
 export PAWN_INSTALL_DIR="$temporary/unsafe-install"
-export PAWN_SHA256="$(digest "$temporary/unsafe.tar.gz")"
+PAWN_SHA256="$(digest "$temporary/unsafe.tar.gz")"
 if "$root/setup/install.sh" >/dev/null 2>&1; then
   echo "unsafe archive path was accepted" >&2
   exit 1
@@ -111,7 +111,7 @@ if ln -s /tmp "$temporary/symlink/pawn" 2>/dev/null && [[ -L "$temporary/symlink
   tar -czf "$temporary/symlink.tar.gz" -C "$temporary/symlink" pawn
   export FIXTURE_ARCHIVE="$temporary/symlink.tar.gz"
   export PAWN_INSTALL_DIR="$temporary/symlink-install"
-  export PAWN_SHA256="$(digest "$temporary/symlink.tar.gz")"
+  PAWN_SHA256="$(digest "$temporary/symlink.tar.gz")"
   if "$root/setup/install.sh" >/dev/null 2>&1; then
     echo "symlink binary was accepted" >&2
     exit 1
@@ -119,7 +119,7 @@ if ln -s /tmp "$temporary/symlink/pawn" 2>/dev/null && [[ -L "$temporary/symlink
 fi
 
 export PAWN_CACHE_HIT="false"
-export PAWN_SHA256="$(printf '0%.0s' {1..64})"
+PAWN_SHA256="$(printf '0%.0s' {1..64})"
 if "$root/setup/install.sh" >/dev/null 2>&1; then
   echo "checksum mismatch was accepted" >&2
   exit 1

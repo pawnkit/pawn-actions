@@ -63,6 +63,8 @@ fi
 
 "$binary" version
 echo "$PAWN_INSTALL_DIR" >> "$GITHUB_PATH"
-echo "version=$PAWN_VERSION" >> "$GITHUB_OUTPUT"
-echo "cache-hit=$cache_valid" >> "$GITHUB_OUTPUT"
-echo "path=$PAWN_INSTALL_DIR" >> "$GITHUB_OUTPUT"
+{
+  echo "version=$PAWN_VERSION"
+  echo "cache-hit=$cache_valid"
+  echo "path=$PAWN_INSTALL_DIR"
+} >> "$GITHUB_OUTPUT"
