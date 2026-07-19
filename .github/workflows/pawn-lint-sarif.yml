@@ -1,0 +1,40 @@
+name: Pawn lint SARIF
+on:
+  workflow_call:
+    inputs:
+      pawn-version:
+        required: true
+        type: string
+      download-url:
+        required: true
+        type: string
+      sha256:
+        required: true
+        type: string
+permissions:
+  contents: read
+  security-events: write
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          persist-credentials: false
+      - uses: pawnkit/pawn-actions/setup@v1
+        with:
+          version: ${{ inputs.pawn-version }}
+          download-url: ${{ inputs.download-url }}
+          sha256: ${{ inputs.sha256 }}
+      - id: lint
+        continue-on-error: true
+        uses: pawnkit/pawn-actions/lint@v1
+        with:
+          sarif-file: pawnlint.sarif
+      - if: ${{ always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
+        uses: github/codeql-action/upload-sarif@ddf5ce7296213f5548c91e2dd19df2d77d2b2d66
+        with:
+          sarif_file: pawnlint.sarif
+      - if: ${{ steps.lint.outcome == 'failure' }}
+        shell: bash
+        run: exit 1

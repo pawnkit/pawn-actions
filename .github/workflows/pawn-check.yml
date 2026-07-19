@@ -1,0 +1,42 @@
+name: Pawn check
+on:
+  workflow_call:
+    inputs:
+      pawn-version:
+        required: true
+        type: string
+      download-url:
+        required: true
+        type: string
+      sha256:
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          persist-credentials: false
+      - uses: pawnkit/pawn-actions/setup@v1
+        with:
+          version: ${{ inputs.pawn-version }}
+          download-url: ${{ inputs.download-url }}
+          sha256: ${{ inputs.sha256 }}
+      - id: check
+        continue-on-error: true
+        uses: pawnkit/pawn-actions/check@v1
+        with:
+          output: json
+          result-file: pawn-check.json
+      - if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: pawn-check
+          path: pawn-check.json
+          if-no-files-found: error
+      - if: ${{ steps.check.outcome == 'failure' }}
+        shell: bash
+        run: exit 1

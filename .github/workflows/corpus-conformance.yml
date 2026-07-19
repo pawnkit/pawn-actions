@@ -1,0 +1,35 @@
+name: Corpus conformance
+on:
+  workflow_call:
+    inputs:
+      pawn-version:
+        required: true
+        type: string
+      download-url:
+        required: true
+        type: string
+      sha256:
+        required: true
+        type: string
+      corpus-path:
+        required: false
+        type: string
+        default: corpus
+permissions:
+  contents: read
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          persist-credentials: false
+      - uses: pawnkit/pawn-actions/setup@v1
+        with:
+          version: ${{ inputs.pawn-version }}
+          download-url: ${{ inputs.download-url }}
+          sha256: ${{ inputs.sha256 }}
+      - uses: pawnkit/pawn-actions/check@v1
+        with:
+          project: ${{ inputs.corpus-path }}
+          jobs: '2'

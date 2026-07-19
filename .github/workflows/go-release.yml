@@ -1,0 +1,84 @@
+name: Go release
+on:
+  workflow_call:
+    inputs:
+      package:
+        required: false
+        type: string
+        default: ./cmd/pawn
+      binary:
+        required: false
+        type: string
+        default: pawn
+permissions:
+  contents: read
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: linux
+            arch: amd64
+            extension: ''
+          - os: linux
+            arch: arm64
+            extension: ''
+          - os: darwin
+            arch: amd64
+            extension: ''
+          - os: darwin
+            arch: arm64
+            extension: ''
+          - os: windows
+            arch: amd64
+            extension: .exe
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version-file: go.mod
+          cache: true
+      - run: go test ./...
+      - shell: bash
+        env:
+          GOOS: ${{ matrix.os }}
+          GOARCH: ${{ matrix.arch }}
+          PACKAGE: ${{ inputs.package }}
+          BINARY: ${{ inputs.binary }}
+          EXTENSION: ${{ matrix.extension }}
+          VERSION: ${{ github.ref_name }}
+        run: |
+          mkdir -p dist archive
+          version="${VERSION#v}"
+          go build -trimpath -ldflags "-X main.version=${version}" -o "archive/${BINARY}${EXTENSION}" "$PACKAGE"
+          tar -czf "dist/${BINARY}-${GOOS}-${GOARCH}.tar.gz" -C archive "${BINARY}${EXTENSION}"
+          cd dist
+          sha256sum "${BINARY}-${GOOS}-${GOARCH}.tar.gz" > "${BINARY}-${GOOS}-${GOARCH}.sha256"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: release-${{ matrix.os }}-${{ matrix.arch }}
+          path: dist/*
+          if-no-files-found: error
+  publish:
+    if: ${{ github.ref_type == 'tag' }}
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
+        with:
+          pattern: release-*
+          path: dist
+          merge-multiple: true
+      - shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" --verify-tag --generate-notes
+          gh release upload "$TAG" dist/* --clobber

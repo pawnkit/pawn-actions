@@ -1,0 +1,26 @@
+version: "3"
+
+tasks:
+  test:
+    cmds:
+      - go test ./...
+      - bash tests/test.sh
+
+  lint:
+    cmds:
+      - golangci-lint run ./...
+      - go tool actionlint
+
+  security:
+    cmds:
+      - go tool govulncheck ./...
+
+  check:
+    cmds:
+      - test -z "$(gofmt -l .)"
+      - go vet ./...
+      - golangci-lint run ./...
+      - CGO_ENABLED=1 go test -race -shuffle=on ./...
+      - bash tests/test.sh
+      - go tool actionlint
+      - go tool govulncheck ./...

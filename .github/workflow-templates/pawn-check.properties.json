@@ -1,0 +1,6 @@
+{
+  "name": "PawnKit check",
+  "description": "Install a verified PawnKit CLI and run pawn check.",
+  "iconName": "octicon check-circle",
+  "categories": ["Continuous integration", "Code quality"]
+}

@@ -1,0 +1,37 @@
+name: Pawn Check
+description: Run the same pawn check pipeline used locally
+inputs:
+  project:
+    description: Project directory
+    default: .
+  only:
+    description: Comma-separated tasks
+    default: ''
+  skip:
+    description: Comma-separated tasks
+    default: ''
+  jobs:
+    description: Maximum concurrent tasks
+    default: '2'
+  output:
+    description: human, json, or sarif
+    default: human
+  result-file:
+    description: Optional report output path
+    default: ''
+outputs:
+  result-file:
+    description: Report output path when configured
+    value: ${{ inputs.result-file }}
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        PAWN_PROJECT: ${{ inputs.project }}
+        PAWN_ONLY: ${{ inputs.only }}
+        PAWN_SKIP: ${{ inputs.skip }}
+        PAWN_JOBS: ${{ inputs.jobs }}
+        PAWN_OUTPUT: ${{ inputs.output }}
+        PAWN_RESULT_FILE: ${{ inputs.result-file }}
+      run: ${{ github.action_path }}/run.sh

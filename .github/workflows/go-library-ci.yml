@@ -1,0 +1,29 @@
+name: Go library CI
+on:
+  workflow_call:
+    inputs:
+      go-version-file:
+        required: false
+        type: string
+        default: go.mod
+permissions:
+  contents: read
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version-file: ${{ inputs.go-version-file }}
+          cache: true
+      - run: go test ./...
+      - run: go vet ./...
+      - if: ${{ runner.os == 'Linux' }}
+        run: go test -race ./...

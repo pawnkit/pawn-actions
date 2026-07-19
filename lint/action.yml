@@ -1,0 +1,27 @@
+name: Pawn Lint
+description: Run semantic linting and write SARIF
+inputs:
+  project:
+    description: Project directory
+    default: .
+  sarif-file:
+    description: SARIF output path
+    default: pawnlint.sarif
+outputs:
+  sarif-file:
+    description: SARIF output path
+    value: ${{ inputs.sarif-file }}
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        PAWN_PROJECT: ${{ inputs.project }}
+        PAWN_SARIF_FILE: ${{ inputs.sarif-file }}
+      run: |
+        set +e
+        pawn check --project "$PAWN_PROJECT" --only lint --output sarif > "$PAWN_SARIF_FILE"
+        status=$?
+        set -e
+        echo "sarif-file=$PAWN_SARIF_FILE" >> "$GITHUB_OUTPUT"
+        exit "$status"

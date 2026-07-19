@@ -1,0 +1,13 @@
+name: Pawn Format Check
+description: Verify formatting through pawn check
+inputs:
+  project:
+    description: Project directory
+    default: .
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        PAWN_PROJECT: ${{ inputs.project }}
+      run: pawn check --project "$PAWN_PROJECT" --only format

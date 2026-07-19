@@ -1,0 +1,21 @@
+name: Pawn Test
+description: Run a negotiated Pawn test backend through pawn check
+inputs:
+  project:
+    description: Project directory
+    default: .
+  test-tool:
+    description: Test backend executable
+    default: pawntest
+  jobs:
+    description: Maximum concurrent tasks
+    default: '2'
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        PAWN_PROJECT: ${{ inputs.project }}
+        PAWN_TEST_TOOL: ${{ inputs.test-tool }}
+        PAWN_JOBS: ${{ inputs.jobs }}
+      run: pawn check --project "$PAWN_PROJECT" --test-tool "$PAWN_TEST_TOOL" --only test --jobs "$PAWN_JOBS"
