@@ -135,6 +135,69 @@ func TestVerifyArtifactsRejectsMissingArtifact(t *testing.T) {
 	}
 }
 
+func TestVerifyRemote(t *testing.T) {
+	t.Parallel()
+
+	artifact := []byte("archive")
+	schema := []byte(`{"type":"object"}`)
+	set := validSet(artifact)
+	schemaSum := sha256.Sum256(schema)
+	set.Schemas[0].Checksum = "sha256:" + hex.EncodeToString(schemaSum[:])
+
+	client := routeClient(func(request *http.Request) (*http.Response, error) {
+		var content []byte
+		switch request.URL.String() {
+		case "https://api.github.com/repos/pawnkit/pawnkit-cli/commits/v1.1.3":
+			content = []byte(`{"sha":"` + set.Components[0].Commit + `"}`)
+		case set.Schemas[0].URL:
+			content = schema
+		case "https://api.github.com/repos/pawnkit/pawn-actions/actions/runs/123456789":
+			content = []byte(`{"head_sha":"` + set.Evidence.Commit + `","status":"completed","conclusion":"success"}`)
+		case set.Components[0].Artifacts[0].URL:
+			content = artifact
+		default:
+			return response(http.StatusNotFound, nil), nil
+		}
+		return response(http.StatusOK, content), nil
+	})
+
+	if err := VerifyRemote(t.Context(), client, set); err != nil {
+		t.Fatalf("VerifyRemote: %v", err)
+	}
+}
+
+func TestVerifyRemoteRejectsWrongTagCommit(t *testing.T) {
+	t.Parallel()
+
+	set := validSet([]byte("archive"))
+	client := routeClient(func(*http.Request) (*http.Response, error) {
+		return response(http.StatusOK, []byte(`{"sha":"`+strings.Repeat("9", 40)+`"}`)), nil
+	})
+	if err := VerifyRemote(t.Context(), client, set); err == nil || !strings.Contains(err.Error(), "tag resolves") {
+		t.Fatalf("VerifyRemote error = %v", err)
+	}
+}
+
+func TestVerifyRemoteRejectsFailedWorkflow(t *testing.T) {
+	t.Parallel()
+
+	set := validSet([]byte("archive"))
+	client := routeClient(func(request *http.Request) (*http.Response, error) {
+		if strings.Contains(request.URL.Path, "/commits/") {
+			return response(http.StatusOK, []byte(`{"sha":"`+set.Components[0].Commit+`"}`)), nil
+		}
+		if request.URL.Host == "schemas.pawnkit.dev" {
+			return response(http.StatusOK, []byte{}), nil
+		}
+		return response(http.StatusOK, []byte(`{"head_sha":"`+set.Evidence.Commit+`","status":"completed","conclusion":"failure"}`)), nil
+	})
+	set.Schemas[0].Checksum = "sha256:" + strings.Repeat("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", 1)
+
+	if err := VerifyRemote(t.Context(), client, set); err == nil || !strings.Contains(err.Error(), "conclusion failure") {
+		t.Fatalf("VerifyRemote error = %v", err)
+	}
+}
+
 func TestValidateGoMod(t *testing.T) {
 	t.Parallel()
 
@@ -159,6 +222,21 @@ type staticClient struct {
 
 func (client staticClient) Do(*http.Request) (*http.Response, error) {
 	return client.response, client.err
+}
+
+type routeClient func(*http.Request) (*http.Response, error)
+
+func (client routeClient) Do(request *http.Request) (*http.Response, error) {
+	return client(request)
+}
+
+func response(status int, content []byte) *http.Response {
+	return &http.Response{
+		StatusCode:    status,
+		Status:        http.StatusText(status),
+		ContentLength: int64(len(content)),
+		Body:          io.NopCloser(bytes.NewReader(content)),
+	}
 }
 
 func validSet(content []byte) Set {

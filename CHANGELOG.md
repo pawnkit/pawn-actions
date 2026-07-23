@@ -2,6 +2,13 @@
 
 Notable changes are recorded here.
 
+## 1.1.1 - 2026-07-23
+
+### Added
+
+- Added remote checks for component tags, schemas, workflow evidence, and
+  release artifacts.
+
 ## 1.1.0 - 2026-07-23
 
 ### Added

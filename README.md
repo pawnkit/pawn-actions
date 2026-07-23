@@ -35,8 +35,11 @@ go run ./cmd/pawn-release-set \
   ../pawnkit-spec/examples/pawn-release-set/valid.json
 ```
 
-Add `-verify-artifacts` to download each listed archive and check its size and
-SHA-256 hash. The command rejects unknown fields, local replacements, PawnKit
+Add `-verify-remote` before publication. It checks tag commits, hosted schemas,
+workflow evidence, artifact sizes, and SHA-256 hashes. Use `-verify-artifacts`
+when only the archives need checking.
+
+The command also rejects unknown fields, local replacements, PawnKit
 pseudo-versions, duplicate entries, and artifacts for untested targets.
 
 Use the `v1` tag for compatible fixes, or pin a full commit when every action

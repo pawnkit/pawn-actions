@@ -26,6 +26,7 @@ func (values *paths) Set(value string) error {
 func main() {
 	var modules paths
 	verify := flag.Bool("verify-artifacts", false, "download and verify release artifacts")
+	verifyRemote := flag.Bool("verify-remote", false, "verify tags, schemas, workflow evidence, and artifacts")
 	flag.Var(&modules, "go-mod", "check a go.mod file; repeat for more files")
 	flag.Parse()
 
@@ -33,13 +34,13 @@ func main() {
 		fmt.Fprintln(os.Stderr, "usage: pawn-release-set [options] <set.json>")
 		os.Exit(2)
 	}
-	if err := run(flag.Arg(0), modules, *verify); err != nil {
+	if err := run(flag.Arg(0), modules, *verify, *verifyRemote); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 }
 
-func run(path string, modules []string, verify bool) error {
+func run(path string, modules []string, verifyArtifacts, verifyRemote bool) error {
 	file, err := os.Open(path) //nolint:gosec // The path is an explicit CLI argument.
 	if err != nil {
 		return fmt.Errorf("open release set: %w", err)
@@ -61,7 +62,12 @@ func run(path string, modules []string, verify bool) error {
 			return err
 		}
 	}
-	if verify {
+	if verifyRemote {
+		client := &http.Client{Timeout: 5 * time.Minute}
+		if err := releaseset.VerifyRemote(context.Background(), client, set); err != nil {
+			return err
+		}
+	} else if verifyArtifacts {
 		client := &http.Client{Timeout: 5 * time.Minute}
 		if err := releaseset.VerifyArtifacts(context.Background(), client, set); err != nil {
 			return err
