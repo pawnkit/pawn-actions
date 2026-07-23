@@ -8,7 +8,7 @@ Start by installing a published `pawn` release, then run the check action:
 - uses: pawnkit/pawn-actions/setup@v1
   with:
     version: 1.0.0
-    download-url: https://github.com/pawnkit/pawnkit-cli/releases/download/v1.0.0/pawn-linux-amd64.tar.gz
+    download-url: https://github.com/pawnkit/pawnkit-cli/releases/download/v1.0.3/pawn-linux-amd64.tar.gz
     sha256: 328acf396dff120b46cc41508d5f59c4a41852f2a85118260df65f635ca6c9c5
 - uses: pawnkit/pawn-actions/check@v1
 ```

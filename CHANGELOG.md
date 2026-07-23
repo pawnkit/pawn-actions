@@ -2,6 +2,12 @@
 
 Notable changes are recorded here.
 
+## 1.0.1 - 2026-07-23
+
+### Fixed
+
+- Updated workflow examples to install PawnKit CLI `v1.0.3`.
+
 ## Unreleased
 
 ### Added
