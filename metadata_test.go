@@ -90,3 +90,15 @@ func TestWorkflowTemplatePropertiesParse(t *testing.T) {
 		t.Fatalf("properties error=%v value=%v", err, value)
 	}
 }
+
+func TestCompositeScriptsUseEnvironmentActionPath(t *testing.T) {
+	for _, name := range []string{"setup/action.yml", "check/action.yml"} {
+		content, err := os.ReadFile(name)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if strings.Contains(string(content), "run: ${{ github.action_path }}") {
+			t.Errorf("%s inserts a Windows path into Bash source", name)
+		}
+	}
+}

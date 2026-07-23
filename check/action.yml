@@ -34,4 +34,4 @@ runs:
         PAWN_JOBS: ${{ inputs.jobs }}
         PAWN_OUTPUT: ${{ inputs.output }}
         PAWN_RESULT_FILE: ${{ inputs.result-file }}
-      run: ${{ github.action_path }}/run.sh
+      run: '"$GITHUB_ACTION_PATH/run.sh"'

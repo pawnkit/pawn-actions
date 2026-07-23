@@ -2,6 +2,12 @@
 
 Notable changes are recorded here.
 
+## 1.2.1 - 2026-07-23
+
+### Fixed
+
+- Fixed setup and check script paths on Windows runners.
+
 ## 1.2.0 - 2026-07-23
 
 ### Added

@@ -28,7 +28,7 @@ runs:
         PAWN_VERSION: ${{ inputs.version }}
         PAWN_DOWNLOAD_URL: ${{ inputs.download-url }}
         PAWN_SHA256: ${{ inputs.sha256 }}
-      run: ${{ github.action_path }}/validate.sh
+      run: '"$GITHUB_ACTION_PATH/validate.sh"'
     - id: cache
       uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809
       with:
@@ -42,4 +42,4 @@ runs:
         PAWN_SHA256: ${{ inputs.sha256 }}
         PAWN_CACHE_HIT: ${{ steps.cache.outputs.cache-hit }}
         PAWN_INSTALL_DIR: ${{ runner.tool_cache }}/pawn/${{ inputs.version }}/${{ runner.os }}-${{ runner.arch }}
-      run: ${{ github.action_path }}/install.sh
+      run: '"$GITHUB_ACTION_PATH/install.sh"'
