@@ -7,13 +7,38 @@ inputs:
   verify-remote:
     description: Check public tags, schemas, workflow evidence, and artifacts
     default: 'true'
+  component:
+    description: Optional component artifact to select
+    default: ''
+  target:
+    description: Target for the selected artifact
+    default: ''
+outputs:
+  version:
+    description: Selected component version
+    value: ${{ steps.validate.outputs.version }}
+  commit:
+    description: Selected component commit
+    value: ${{ steps.validate.outputs.commit }}
+  url:
+    description: Selected artifact URL
+    value: ${{ steps.validate.outputs.url }}
+  size:
+    description: Selected artifact size
+    value: ${{ steps.validate.outputs.size }}
+  sha256:
+    description: Selected artifact SHA-256 digest
+    value: ${{ steps.validate.outputs.sha256 }}
 runs:
   using: composite
   steps:
-    - shell: bash
+    - id: validate
+      shell: bash
       env:
         PAWN_RELEASE_SET: ${{ inputs.release-set }}
         PAWN_VERIFY_REMOTE: ${{ inputs.verify-remote }}
+        PAWN_COMPONENT: ${{ inputs.component }}
+        PAWN_TARGET: ${{ inputs.target }}
       run: |
         case "$PAWN_RELEASE_SET" in
           /*|[A-Za-z]:*) set_path="$PAWN_RELEASE_SET" ;;
@@ -23,6 +48,9 @@ runs:
         args=()
         if [ "$PAWN_VERIFY_REMOTE" = true ]; then
           args+=("-verify-remote")
+        fi
+        if [ -n "$PAWN_COMPONENT$PAWN_TARGET" ]; then
+          args+=("-component" "$PAWN_COMPONENT" "-target" "$PAWN_TARGET" "-github-output" "$GITHUB_OUTPUT")
         fi
 
         cd "$GITHUB_ACTION_PATH/.."

@@ -15,3 +15,6 @@ scripts never evaluate them as shell source.
 The `releaseset` package validates RFC 0009 documents. It checks pinned module
 versions, public tag commits, workflow evidence, hosted schemas, and release
 archives before a set is published. The schema remains in `pawnkit-spec`.
+
+The release-set action selects an archive from that document. Setup still owns
+download, extraction, caching, and executable checks.

@@ -2,6 +2,13 @@
 
 Notable changes are recorded here.
 
+## 1.2.0 - 2026-07-23
+
+### Added
+
+- Added release artifact selection for Actions outputs.
+- Added a three-platform smoke workflow for the pinned CLI and corpus projects.
+
 ## 1.1.2 - 2026-07-23
 
 ### Added

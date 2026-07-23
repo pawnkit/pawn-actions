@@ -1,0 +1,125 @@
+name: Release set smoke
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/release-set-smoke.yml
+      - cmd/pawn-release-set/**
+      - release-set/**
+      - releaseset/**
+      - setup/**
+  workflow_dispatch:
+    inputs:
+      spec-ref:
+        description: Exact pawnkit-spec tag or commit
+        required: true
+        default: v0.1.9
+      set-path:
+        description: Path below pawnkit-spec
+        required: true
+        default: examples/pawn-release-set/candidate.json
+      corpus-ref:
+        description: Exact pawn-corpus tag or commit
+        required: true
+        default: v0.1.7
+  workflow_call:
+    inputs:
+      spec-ref:
+        description: Exact pawnkit-spec tag or commit
+        required: true
+        type: string
+      set-path:
+        description: Path below pawnkit-spec
+        required: true
+        type: string
+      corpus-ref:
+        description: Exact pawn-corpus tag or commit
+        required: true
+        type: string
+permissions:
+  contents: read
+env:
+  SPEC_REF: ${{ inputs.spec-ref || 'v0.1.9' }}
+  SET_PATH: ${{ inputs.set-path || 'examples/pawn-release-set/candidate.json' }}
+  CORPUS_REF: ${{ inputs.corpus-ref || 'v0.1.7' }}
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          repository: pawnkit/pawnkit-spec
+          ref: ${{ env.SPEC_REF }}
+          path: .pawnkit/spec
+          persist-credentials: false
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          repository: pawnkit/pawn-actions
+          ref: ${{ github.workflow_sha }}
+          path: .pawnkit/actions
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version-file: .pawnkit/actions/go.mod
+          cache-dependency-path: .pawnkit/actions/go.sum
+      - uses: ./.pawnkit/actions/release-set
+        with:
+          release-set: .pawnkit/spec/${{ env.SET_PATH }}
+          verify-remote: 'true'
+
+  smoke:
+    needs: validate
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: linux-amd64
+          - os: windows-latest
+            target: windows-amd64
+          - os: macos-latest
+            target: darwin-arm64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          repository: pawnkit/pawnkit-spec
+          ref: ${{ env.SPEC_REF }}
+          path: .pawnkit/spec
+          persist-credentials: false
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          repository: pawnkit/pawn-actions
+          ref: ${{ github.workflow_sha }}
+          path: .pawnkit/actions
+          persist-credentials: false
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          repository: pawnkit/pawn-corpus
+          ref: ${{ env.CORPUS_REF }}
+          path: .pawnkit/corpus
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version-file: .pawnkit/actions/go.mod
+          cache-dependency-path: .pawnkit/actions/go.sum
+      - id: pawn
+        uses: ./.pawnkit/actions/release-set
+        with:
+          release-set: .pawnkit/spec/${{ env.SET_PATH }}
+          verify-remote: 'false'
+          component: pawn
+          target: ${{ matrix.target }}
+      - uses: ./.pawnkit/actions/setup
+        with:
+          version: ${{ steps.pawn.outputs.version }}
+          download-url: ${{ steps.pawn.outputs.url }}
+          sha256: ${{ steps.pawn.outputs.sha256 }}
+      - name: Check golden projects
+        shell: bash
+        run: |
+          for project in minimal-samp-gamemode filterscript-with-includes; do
+            path=".pawnkit/corpus/projects/$project"
+            pawn doctor --project "$path"
+            pawn check --project "$path" --only project
+          done

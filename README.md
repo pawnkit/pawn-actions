@@ -53,6 +53,25 @@ jobs:
       set-path: release-sets/preview-2026-07-23.json
 ```
 
+The release-set action can also select an archive for a runner:
+
+```yaml
+- id: pawn
+  uses: pawnkit/pawn-actions/release-set@v1.2.0
+  with:
+    release-set: release-sets/preview.json
+    component: pawn
+    target: linux-amd64
+- uses: pawnkit/pawn-actions/setup@v1
+  with:
+    version: ${{ steps.pawn.outputs.version }}
+    download-url: ${{ steps.pawn.outputs.url }}
+    sha256: ${{ steps.pawn.outputs.sha256 }}
+```
+
+`release-set-smoke.yml` installs the selected CLI archive on Linux, Windows,
+and macOS, then checks the small SA-MP and open.mp corpus projects.
+
 Use the `v1` tag for compatible fixes, or pin a full commit when every action
 update must be reviewed.
 

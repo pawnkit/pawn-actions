@@ -215,6 +215,32 @@ func TestValidateGoMod(t *testing.T) {
 	}
 }
 
+func TestSelectArtifact(t *testing.T) {
+	t.Parallel()
+
+	set := validSet([]byte("archive"))
+	component, artifact, err := SelectArtifact(set, "pawn", "linux-amd64")
+	if err != nil {
+		t.Fatalf("SelectArtifact: %v", err)
+	}
+	if component.Version != "v1.1.3" || artifact.Target != "linux-amd64" {
+		t.Fatalf("component=%+v artifact=%+v", component, artifact)
+	}
+	for _, test := range []struct {
+		component string
+		target    string
+		message   string
+	}{
+		{component: "missing", target: "linux-amd64", message: "was not found"},
+		{component: "pawn", target: "windows-amd64", message: "has no artifact"},
+	} {
+		if _, _, err := SelectArtifact(set, test.component, test.target); err == nil ||
+			!strings.Contains(err.Error(), test.message) {
+			t.Fatalf("SelectArtifact(%q, %q) error = %v", test.component, test.target, err)
+		}
+	}
+}
+
 type staticClient struct {
 	response *http.Response
 	err      error
