@@ -2,6 +2,12 @@
 
 Notable changes are recorded here.
 
+## 1.3.2 - 2026-07-23
+
+### Fixed
+
+- Fixed the pawntest include check in the release-set smoke workflow.
+
 ## 1.3.1 - 2026-07-23
 
 ### Changed

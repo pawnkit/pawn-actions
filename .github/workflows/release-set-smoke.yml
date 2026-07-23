@@ -162,7 +162,8 @@ jobs:
           verify-remote: 'false'
           component: pawntest
           target: ${{ matrix.target }}
-      - uses: ./.pawnkit/actions/setup-tool
+      - id: pawntest-install
+        uses: ./.pawnkit/actions/setup-tool
         with:
           binary: pawntest
           version: ${{ steps.pawntest.outputs.version }}
@@ -176,7 +177,7 @@ jobs:
           pawnlint --version
           pawnlsp --version
           pawntest --version
-          test -f "${{ steps.pawntest.outputs.path }}/include/pawntest.inc"
+          test -f "${{ steps.pawntest-install.outputs.path }}/include/pawntest.inc"
       - name: Check golden projects
         shell: bash
         run: |
