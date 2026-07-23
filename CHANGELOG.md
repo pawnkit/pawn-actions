@@ -2,6 +2,12 @@
 
 Notable changes are recorded here.
 
+## 1.4.4 - 2026-07-23
+
+### Changed
+
+- Smoke PawnKit CLI v1.2.0 on Linux, Windows, and macOS.
+
 ## 1.4.3 - 2026-07-23
 
 ### Fixed

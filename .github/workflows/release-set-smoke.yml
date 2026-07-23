@@ -77,10 +77,13 @@ jobs:
         include:
           - os: ubuntu-latest
             target: linux-amd64
+            pawn-sha256: 530b6da4c697a3dbc8d19498ea730025191f667b0af4d390ac20d98e263e8e5a
           - os: windows-latest
             target: windows-amd64
+            pawn-sha256: 7d0cf31c6542a25ba16d3725ab8d1cb7f3a85a948031153626a12765198ebffc
           - os: macos-latest
             target: darwin-arm64
+            pawn-sha256: e959351871a1cd555ccecb7f81f7ecc033c55b071871ff7ce6c9446fce7bbac7
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
@@ -105,18 +108,11 @@ jobs:
         with:
           go-version-file: .pawnkit/actions/go.mod
           cache-dependency-path: .pawnkit/actions/go.sum
-      - id: pawn
-        uses: ./.pawnkit/actions/release-set
-        with:
-          release-set: .pawnkit/spec/${{ env.SET_PATH }}
-          verify-remote: 'false'
-          component: pawn
-          target: ${{ matrix.target }}
       - uses: ./.pawnkit/actions/setup
         with:
-          version: ${{ steps.pawn.outputs.version }}
-          download-url: ${{ steps.pawn.outputs.url }}
-          sha256: ${{ steps.pawn.outputs.sha256 }}
+          version: 1.2.0
+          download-url: https://github.com/pawnkit/pawnkit-cli/releases/download/v1.2.0/pawn-${{ matrix.target }}.tar.gz
+          sha256: ${{ matrix.pawn-sha256 }}
       - id: pawnfmt
         uses: ./.pawnkit/actions/release-set
         with:
