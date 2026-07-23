@@ -2,6 +2,12 @@
 
 Notable changes are recorded here.
 
+## 1.4.2 - 2026-07-23
+
+### Fixed
+
+- Print failed build reports in CI when a result file is configured.
+
 ## 1.4.1 - 2026-07-23
 
 ### Added

@@ -24,6 +24,9 @@ if [[ -n "$PAWN_RESULT_FILE" ]]; then
   pawn "${args[@]}" > "$PAWN_RESULT_FILE"
   status=$?
   set -e
+  if ((status != 0)); then
+    cat "$PAWN_RESULT_FILE" >&2
+  fi
   exit "$status"
 fi
 exec pawn "${args[@]}"

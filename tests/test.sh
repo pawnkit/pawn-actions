@@ -131,6 +131,7 @@ cat > "$temporary/bin/pawn" <<'SCRIPT'
 #!/usr/bin/env bash
 printf '%s\n' "$@" > "$PAWN_ARGUMENTS"
 printf '{"status":"passed"}\n'
+exit "${PAWN_EXIT:-0}"
 SCRIPT
 chmod +x "$temporary/bin/pawn"
 
@@ -163,6 +164,14 @@ compiler path/pawncc
 --artifact
 build/server.amx
 EXPECTED
+
+export PAWN_EXIT="1"
+if "$root/build/run.sh" 2>"$temporary/build-error"; then
+  echo "build action ignored a failed build" >&2
+  exit 1
+fi
+test "$(cat "$temporary/build-error")" = '{"status":"passed"}'
+export PAWN_EXIT="0"
 
 export PAWN_COMPILER=""
 export PAWN_RESULT_FILE=""
