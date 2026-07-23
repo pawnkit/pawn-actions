@@ -69,6 +69,27 @@ The release-set action can also select an archive for a runner:
     sha256: ${{ steps.pawn.outputs.sha256 }}
 ```
 
+Use `setup-tool` for the other binaries selected from a release set:
+
+```yaml
+- id: pawnlint
+  uses: pawnkit/pawn-actions/release-set@v1.3.0
+  with:
+    release-set: release-sets/preview.json
+    component: pawnlint
+    target: linux-amd64
+- uses: pawnkit/pawn-actions/setup-tool@v1.3.0
+  with:
+    binary: pawnlint
+    version: ${{ steps.pawnlint.outputs.version }}
+    download-url: ${{ steps.pawnlint.outputs.url }}
+    sha256: ${{ steps.pawnlint.outputs.sha256 }}
+```
+
+The installer accepts `.tar.gz` and `.zip` release archives. It verifies the
+checksum and version before adding the tool to `PATH`. Pawntest includes are
+installed beside its executable.
+
 `release-set-smoke.yml` installs the selected CLI archive on Linux, Windows,
 and macOS, then checks the small SA-MP and open.mp corpus projects.
 

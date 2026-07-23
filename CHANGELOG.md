@@ -2,6 +2,13 @@
 
 Notable changes are recorded here.
 
+## 1.3.0 - 2026-07-23
+
+### Added
+
+- Added a verified installer for PawnKit tool archives.
+- Added Linux, Windows, and macOS installer coverage.
+
 ## 1.2.2 - 2026-07-23
 
 ### Changed

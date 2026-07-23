@@ -18,3 +18,7 @@ archives before a set is published. The schema remains in `pawnkit-spec`.
 
 The release-set action selects an archive from that document. Setup still owns
 download, extraction, caching, and executable checks.
+
+`setup-tool` handles the remaining PawnKit binaries. Its Go archive reader
+rejects links, unsafe paths, duplicate files, oversized content, and missing
+executables. Only pawntest `.inc` files are kept beside the binary.

@@ -9,7 +9,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            pawnlint-asset: pawnlint_1.1.4_linux_amd64.tar.gz
+            pawnlint-sha256: 55c08f79e5805ae176ba195b6994b36902f143cee302fe381feebce91a54e4b1
+          - os: windows-latest
+            pawnlint-asset: pawnlint_1.1.4_windows_amd64.zip
+            pawnlint-sha256: 29466f46db85b35353fab2ee9964e4e6c7d3f1158548b56a45f9e86b0a988a2b
+          - os: macos-latest
+            pawnlint-asset: pawnlint_1.1.4_darwin_arm64.tar.gz
+            pawnlint-sha256: e7d5f6fd2c2a99888ef9590c18660e3ae47f99736a58a33022a30ad394fe4c58
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
@@ -19,6 +28,13 @@ jobs:
         with:
           go-version-file: go.mod
           cache: true
+      - uses: ./setup-tool
+        with:
+          binary: pawnlint
+          version: v1.1.4
+          download-url: https://github.com/pawnkit/pawnlint/releases/download/v1.1.4/${{ matrix.pawnlint-asset }}
+          sha256: ${{ matrix.pawnlint-sha256 }}
+      - run: pawnlint --version
       - run: go test ./...
       - run: go vet ./...
       - if: ${{ runner.os == 'Linux' }}
@@ -27,7 +43,7 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
           repository: pawnkit/pawnkit-spec
-          ref: v0.1.8
+          ref: v0.1.10
           path: .test/pawnkit-spec
           persist-credentials: false
       - if: ${{ runner.os == 'Linux' }}

@@ -34,7 +34,7 @@ func TestYAMLFilesParse(t *testing.T) {
 }
 
 func TestActionMetadataHasCompositeRuns(t *testing.T) {
-	for _, directory := range []string{"setup", "check", "fmt", "lint", "test", "release-set"} {
+	for _, directory := range []string{"setup", "setup-tool", "check", "fmt", "lint", "test", "release-set"} {
 		content, err := os.ReadFile(filepath.Join(directory, "action.yml"))
 		if err != nil {
 			t.Fatal(err)
