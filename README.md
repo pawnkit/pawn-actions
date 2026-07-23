@@ -47,9 +47,9 @@ Repositories can call the shared validation workflow:
 ```yaml
 jobs:
   release-set:
-    uses: pawnkit/pawn-actions/.github/workflows/release-set.yml@v1.1.2
+    uses: pawnkit/pawn-actions/.github/workflows/release-set.yml@v1.2.2
     with:
-      spec-ref: v0.1.8
+      spec-ref: v0.1.10
       set-path: release-sets/preview-2026-07-23.json
 ```
 

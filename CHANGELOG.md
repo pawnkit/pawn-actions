@@ -2,6 +2,12 @@
 
 Notable changes are recorded here.
 
+## 1.2.2 - 2026-07-23
+
+### Changed
+
+- Made the v0.1.10 tested release set the smoke workflow default.
+
 ## 1.2.1 - 2026-07-23
 
 ### Fixed
