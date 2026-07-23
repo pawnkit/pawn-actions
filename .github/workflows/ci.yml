@@ -23,6 +23,15 @@ jobs:
       - run: go vet ./...
       - if: ${{ runner.os == 'Linux' }}
         run: CGO_ENABLED=1 go test -race -shuffle=on ./...
+      - if: ${{ runner.os == 'Linux' }}
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          repository: pawnkit/pawnkit-spec
+          ref: v0.1.7
+          path: .test/pawnkit-spec
+          persist-credentials: false
+      - if: ${{ runner.os == 'Linux' }}
+        run: go run ./cmd/pawn-release-set -go-mod go.mod .test/pawnkit-spec/examples/pawn-release-set/valid.json
       - shell: bash
         run: bash tests/test.sh
 

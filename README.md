@@ -25,6 +25,20 @@ Reusable workflows are available under `.github/workflows`. They cover the
 general check pipeline, SARIF upload, corpus conformance, Go library CI, and Go
 release archives.
 
+## Validate a release set
+
+Validate a tested release set and the Go modules it names before publication:
+
+```sh
+go run ./cmd/pawn-release-set \
+  -go-mod ../pawnkit-cli/go.mod \
+  ../pawnkit-spec/examples/pawn-release-set/valid.json
+```
+
+Add `-verify-artifacts` to download each listed archive and check its size and
+SHA-256 hash. The command rejects unknown fields, local replacements, PawnKit
+pseudo-versions, duplicate entries, and artifacts for untested targets.
+
 Use the `v1` tag for compatible fixes, or pin a full commit when every action
 update must be reviewed.
 
