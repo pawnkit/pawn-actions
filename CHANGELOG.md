@@ -2,6 +2,12 @@
 
 Notable changes are recorded here.
 
+## 1.4.3 - 2026-07-23
+
+### Fixed
+
+- Load the compiler library from the verified Pawn release archive.
+
 ## 1.4.2 - 2026-07-23
 
 ### Fixed
