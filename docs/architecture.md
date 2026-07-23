@@ -7,6 +7,7 @@ linter, test, build, or project logic.
 ```text
 setup -> checksum verification -> tool cache -> pawn
 check -> pawn check
+build -> pawn build
 ```
 
 Paths and task names pass through environment variables and Bash arrays. The

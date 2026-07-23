@@ -74,7 +74,7 @@ jobs:
         with:
           version: v2.11.4
       - run: go tool actionlint
-      - run: shellcheck setup/*.sh check/*.sh tests/*.sh
+      - run: shellcheck setup/*.sh check/*.sh build/*.sh tests/*.sh
 
   security:
     runs-on: ubuntu-latest

@@ -1,0 +1,49 @@
+name: Pawn Build
+description: Build a Pawn project with the selected compiler or backend
+inputs:
+  project:
+    description: Project directory
+    default: .
+  profile:
+    description: Project profile
+    default: ''
+  build:
+    description: Named build
+    default: ''
+  runtime:
+    description: Named runtime
+    default: ''
+  compiler:
+    description: Pawn compiler path
+    default: ''
+  backend:
+    description: RFC 0012 backend executable
+    default: ''
+  artifact:
+    description: Optional output path
+    default: ''
+  output:
+    description: human or json
+    default: human
+  result-file:
+    description: Optional build report path
+    default: ''
+outputs:
+  result-file:
+    description: Build report path when configured
+    value: ${{ inputs.result-file }}
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        PAWN_PROJECT: ${{ inputs.project }}
+        PAWN_PROFILE: ${{ inputs.profile }}
+        PAWN_BUILD: ${{ inputs.build }}
+        PAWN_RUNTIME: ${{ inputs.runtime }}
+        PAWN_COMPILER: ${{ inputs.compiler }}
+        PAWN_BACKEND: ${{ inputs.backend }}
+        PAWN_ARTIFACT: ${{ inputs.artifact }}
+        PAWN_OUTPUT: ${{ inputs.output }}
+        PAWN_RESULT_FILE: ${{ inputs.result-file }}
+      run: '"$GITHUB_ACTION_PATH/run.sh"'

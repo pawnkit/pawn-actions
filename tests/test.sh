@@ -125,7 +125,57 @@ if "$root/setup/install.sh" >/dev/null 2>&1; then
   exit 1
 fi
 
-bash -n "$root/setup/validate.sh" "$root/setup/install.sh" "$root/check/run.sh"
+bash -n "$root/setup/validate.sh" "$root/setup/install.sh" "$root/check/run.sh" "$root/build/run.sh"
+
+cat > "$temporary/bin/pawn" <<'SCRIPT'
+#!/usr/bin/env bash
+printf '%s\n' "$@" > "$PAWN_ARGUMENTS"
+printf '{"status":"passed"}\n'
+SCRIPT
+chmod +x "$temporary/bin/pawn"
+
+export PAWN_ARGUMENTS="$temporary/pawn-arguments"
+export PAWN_PROJECT="project path"
+export PAWN_PROFILE="openmp"
+export PAWN_BUILD="debug"
+export PAWN_RUNTIME="server"
+export PAWN_COMPILER="compiler path/pawncc"
+export PAWN_BACKEND=""
+export PAWN_ARTIFACT="build/server.amx"
+export PAWN_OUTPUT="json"
+export PAWN_RESULT_FILE="$temporary/results/build.json"
+"$root/build/run.sh"
+test "$(cat "$PAWN_RESULT_FILE")" = '{"status":"passed"}'
+diff -u - "$PAWN_ARGUMENTS" <<'EXPECTED'
+build
+--project
+project path
+--format
+json
+--profile
+openmp
+--build
+debug
+--runtime
+server
+--compiler
+compiler path/pawncc
+--artifact
+build/server.amx
+EXPECTED
+
+export PAWN_COMPILER=""
+export PAWN_RESULT_FILE=""
+if "$root/build/run.sh" >/dev/null 2>&1; then
+  echo "build action accepted no compiler or backend" >&2
+  exit 1
+fi
+export PAWN_COMPILER="pawncc"
+export PAWN_BACKEND="sampctl"
+if "$root/build/run.sh" >/dev/null 2>&1; then
+  echo "build action accepted both compiler and backend" >&2
+  exit 1
+fi
 
 while IFS= read -r use; do
   target="${use#*uses: }"
@@ -136,4 +186,4 @@ while IFS= read -r use; do
     echo "third-party action is not pinned: $target" >&2
     exit 1
   fi
-done < <(grep -RhoE 'uses: [^[:space:]]+' "$root/.github" "$root/setup" "$root/check" "$root/fmt" "$root/lint" "$root/test" "$root/release-set")
+done < <(grep -RhoE 'uses: [^[:space:]]+' "$root/.github" "$root/setup" "$root/check" "$root/build" "$root/fmt" "$root/lint" "$root/test" "$root/release-set")

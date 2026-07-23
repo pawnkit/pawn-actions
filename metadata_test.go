@@ -34,7 +34,7 @@ func TestYAMLFilesParse(t *testing.T) {
 }
 
 func TestActionMetadataHasCompositeRuns(t *testing.T) {
-	for _, directory := range []string{"setup", "setup-tool", "check", "fmt", "lint", "test", "release-set"} {
+	for _, directory := range []string{"setup", "setup-tool", "check", "build", "fmt", "lint", "test", "release-set"} {
 		content, err := os.ReadFile(filepath.Join(directory, "action.yml"))
 		if err != nil {
 			t.Fatal(err)
@@ -92,7 +92,7 @@ func TestWorkflowTemplatePropertiesParse(t *testing.T) {
 }
 
 func TestCompositeScriptsUseEnvironmentActionPath(t *testing.T) {
-	for _, name := range []string{"setup/action.yml", "check/action.yml"} {
+	for _, name := range []string{"setup/action.yml", "check/action.yml", "build/action.yml"} {
 		content, err := os.ReadFile(name)
 		if err != nil {
 			t.Fatal(err)

@@ -9,6 +9,7 @@ on:
       - releaseset/**
       - setup/**
       - setup-tool/**
+      - build/**
   workflow_dispatch:
     inputs:
       spec-ref:

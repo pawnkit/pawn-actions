@@ -2,6 +2,12 @@
 
 Notable changes are recorded here.
 
+## 1.4.0 - 2026-07-23
+
+### Added
+
+- Added a build action for direct compilers and RFC 0012 backends.
+
 ## 1.3.3 - 2026-07-23
 
 ### Changed
