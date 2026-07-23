@@ -192,3 +192,45 @@ jobs:
             pawnfmt --write "$formatted/$project"
             pawnfmt --check "$formatted/$project"
           done
+
+  build:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          repository: pawnkit/pawn-actions
+          ref: ${{ github.workflow_sha }}
+          path: .pawnkit/actions
+          persist-credentials: false
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          repository: pawnkit/pawn-corpus
+          ref: ${{ env.CORPUS_REF }}
+          path: .pawnkit/corpus
+          persist-credentials: false
+      - uses: ./.pawnkit/actions/setup
+        with:
+          version: 1.2.0
+          download-url: https://github.com/pawnkit/pawnkit-cli/releases/download/v1.2.0/pawn-linux-amd64.tar.gz
+          sha256: 530b6da4c697a3dbc8d19498ea730025191f667b0af4d390ac20d98e263e8e5a
+      - name: Install Pawn 3.10.10
+        shell: bash
+        run: |
+          wget -q https://github.com/pawn-lang/compiler/releases/download/v3.10.10/pawnc-3.10.10-linux.tar.gz
+          echo "9bbb1df6e933318fce1fa61951e4196b70613c637a5a1d4c96937e147c18468d  pawnc-3.10.10-linux.tar.gz" | sha256sum -c -
+          tar -xzf pawnc-3.10.10-linux.tar.gz
+      - uses: ./.pawnkit/actions/build
+        with:
+          project: .pawnkit/corpus/projects/minimal-samp-gamemode
+          compiler: ${{ github.workspace }}/pawnc-3.10.10-linux/bin/pawncc
+          artifact: ${{ runner.temp }}/minimal-samp-gamemode.amx
+          output: json
+          result-file: ${{ runner.temp }}/minimal-samp-gamemode.json
+      - uses: ./.pawnkit/actions/build
+        with:
+          project: .pawnkit/corpus/projects/filterscript-with-includes
+          compiler: ${{ github.workspace }}/pawnc-3.10.10-linux/bin/pawncc
+          artifact: ${{ runner.temp }}/filterscript-with-includes.amx
+          output: json
+          result-file: ${{ runner.temp }}/filterscript-with-includes.json

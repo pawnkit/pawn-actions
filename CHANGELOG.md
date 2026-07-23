@@ -2,6 +2,12 @@
 
 Notable changes are recorded here.
 
+## 1.4.1 - 2026-07-23
+
+### Added
+
+- Added compiler-backed build coverage for both golden corpus projects.
+
 ## 1.4.0 - 2026-07-23
 
 ### Added
