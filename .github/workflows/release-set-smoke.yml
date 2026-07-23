@@ -8,16 +8,17 @@ on:
       - release-set/**
       - releaseset/**
       - setup/**
+      - setup-tool/**
   workflow_dispatch:
     inputs:
       spec-ref:
         description: Exact pawnkit-spec tag or commit
         required: true
-        default: v0.1.10
+        default: v0.1.11
       set-path:
         description: Path below pawnkit-spec
         required: true
-        default: release-sets/preview-2026-07-23.json
+        default: release-sets/candidate-2026-07-23.json
       corpus-ref:
         description: Exact pawn-corpus tag or commit
         required: true
@@ -39,8 +40,8 @@ on:
 permissions:
   contents: read
 env:
-  SPEC_REF: ${{ inputs.spec-ref || 'v0.1.10' }}
-  SET_PATH: ${{ inputs.set-path || 'release-sets/preview-2026-07-23.json' }}
+  SPEC_REF: ${{ inputs.spec-ref || 'v0.1.11' }}
+  SET_PATH: ${{ inputs.set-path || 'release-sets/candidate-2026-07-23.json' }}
   CORPUS_REF: ${{ inputs.corpus-ref || 'v0.1.7' }}
 jobs:
   validate:
@@ -115,11 +116,77 @@ jobs:
           version: ${{ steps.pawn.outputs.version }}
           download-url: ${{ steps.pawn.outputs.url }}
           sha256: ${{ steps.pawn.outputs.sha256 }}
+      - id: pawnfmt
+        uses: ./.pawnkit/actions/release-set
+        with:
+          release-set: .pawnkit/spec/${{ env.SET_PATH }}
+          verify-remote: 'false'
+          component: pawnfmt
+          target: ${{ matrix.target }}
+      - uses: ./.pawnkit/actions/setup-tool
+        with:
+          binary: pawnfmt
+          version: ${{ steps.pawnfmt.outputs.version }}
+          download-url: ${{ steps.pawnfmt.outputs.url }}
+          sha256: ${{ steps.pawnfmt.outputs.sha256 }}
+      - id: pawnlint
+        uses: ./.pawnkit/actions/release-set
+        with:
+          release-set: .pawnkit/spec/${{ env.SET_PATH }}
+          verify-remote: 'false'
+          component: pawnlint
+          target: ${{ matrix.target }}
+      - uses: ./.pawnkit/actions/setup-tool
+        with:
+          binary: pawnlint
+          version: ${{ steps.pawnlint.outputs.version }}
+          download-url: ${{ steps.pawnlint.outputs.url }}
+          sha256: ${{ steps.pawnlint.outputs.sha256 }}
+      - id: pawnlsp
+        uses: ./.pawnkit/actions/release-set
+        with:
+          release-set: .pawnkit/spec/${{ env.SET_PATH }}
+          verify-remote: 'false'
+          component: pawnlsp
+          target: ${{ matrix.target }}
+      - uses: ./.pawnkit/actions/setup-tool
+        with:
+          binary: pawnlsp
+          version: ${{ steps.pawnlsp.outputs.version }}
+          download-url: ${{ steps.pawnlsp.outputs.url }}
+          sha256: ${{ steps.pawnlsp.outputs.sha256 }}
+      - id: pawntest
+        uses: ./.pawnkit/actions/release-set
+        with:
+          release-set: .pawnkit/spec/${{ env.SET_PATH }}
+          verify-remote: 'false'
+          component: pawntest
+          target: ${{ matrix.target }}
+      - uses: ./.pawnkit/actions/setup-tool
+        with:
+          binary: pawntest
+          version: ${{ steps.pawntest.outputs.version }}
+          download-url: ${{ steps.pawntest.outputs.url }}
+          sha256: ${{ steps.pawntest.outputs.sha256 }}
+      - name: Check installed tools
+        shell: bash
+        run: |
+          pawn --version
+          pawnfmt --version
+          pawnlint --version
+          pawnlsp --version
+          pawntest --version
+          test -f "${{ steps.pawntest.outputs.path }}/include/pawntest.inc"
       - name: Check golden projects
         shell: bash
         run: |
+          formatted="$(mktemp -d)"
           for project in minimal-samp-gamemode filterscript-with-includes; do
             path=".pawnkit/corpus/projects/$project"
             pawn doctor --project "$path"
-            pawn check --project "$path" --only project
+            pawn check --project "$path" --only project,lint
+            pawnlint "$path"
+            cp -R "$path" "$formatted/$project"
+            pawnfmt --write "$formatted/$project"
+            pawnfmt --check "$formatted/$project"
           done

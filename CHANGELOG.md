@@ -2,6 +2,12 @@
 
 Notable changes are recorded here.
 
+## 1.3.1 - 2026-07-23
+
+### Changed
+
+- Expanded the release-set smoke test to the primary command-line tools.
+
 ## 1.3.0 - 2026-07-23
 
 ### Added
