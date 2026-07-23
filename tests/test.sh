@@ -130,9 +130,10 @@ bash -n "$root/setup/validate.sh" "$root/setup/install.sh" "$root/check/run.sh"
 while IFS= read -r use; do
   target="${use#*uses: }"
   if [[ "$target" == pawnkit/* ]]; then continue; fi
+  if [[ "$target" == ./* ]]; then continue; fi
   reference="${target##*@}"
   if [[ ! "$reference" =~ ^[0-9a-f]{40}$ ]]; then
     echo "third-party action is not pinned: $target" >&2
     exit 1
   fi
-done < <(grep -RhoE 'uses: [^[:space:]]+' "$root/.github" "$root/setup" "$root/check" "$root/fmt" "$root/lint" "$root/test")
+done < <(grep -RhoE 'uses: [^[:space:]]+' "$root/.github" "$root/setup" "$root/check" "$root/fmt" "$root/lint" "$root/test" "$root/release-set")

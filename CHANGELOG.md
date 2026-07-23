@@ -2,6 +2,12 @@
 
 Notable changes are recorded here.
 
+## 1.1.2 - 2026-07-23
+
+### Added
+
+- Added an action and reusable workflow for validating a pinned release set.
+
 ## 1.1.1 - 2026-07-23
 
 ### Added

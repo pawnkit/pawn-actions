@@ -32,6 +32,11 @@ jobs:
           persist-credentials: false
       - if: ${{ runner.os == 'Linux' }}
         run: go run ./cmd/pawn-release-set -go-mod go.mod .test/pawnkit-spec/examples/pawn-release-set/valid.json
+      - if: ${{ runner.os == 'Linux' }}
+        uses: ./release-set
+        with:
+          release-set: .test/pawnkit-spec/examples/pawn-release-set/valid.json
+          verify-remote: 'false'
       - shell: bash
         run: bash tests/test.sh
 

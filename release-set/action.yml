@@ -1,0 +1,29 @@
+name: Validate PawnKit release set
+description: Validate a pinned PawnKit tested release set
+inputs:
+  release-set:
+    description: Release-set path, relative to the caller workspace
+    required: true
+  verify-remote:
+    description: Check public tags, schemas, workflow evidence, and artifacts
+    default: 'true'
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        PAWN_RELEASE_SET: ${{ inputs.release-set }}
+        PAWN_VERIFY_REMOTE: ${{ inputs.verify-remote }}
+      run: |
+        case "$PAWN_RELEASE_SET" in
+          /*|[A-Za-z]:*) set_path="$PAWN_RELEASE_SET" ;;
+          *) set_path="$GITHUB_WORKSPACE/$PAWN_RELEASE_SET" ;;
+        esac
+
+        args=()
+        if [ "$PAWN_VERIFY_REMOTE" = true ]; then
+          args+=("-verify-remote")
+        fi
+
+        cd "$GITHUB_ACTION_PATH/.."
+        go run ./cmd/pawn-release-set "${args[@]}" "$set_path"

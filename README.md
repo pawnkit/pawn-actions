@@ -42,6 +42,17 @@ when only the archives need checking.
 The command also rejects unknown fields, local replacements, PawnKit
 pseudo-versions, duplicate entries, and artifacts for untested targets.
 
+Repositories can call the shared validation workflow:
+
+```yaml
+jobs:
+  release-set:
+    uses: pawnkit/pawn-actions/.github/workflows/release-set.yml@v1.1.2
+    with:
+      spec-ref: v0.1.8
+      set-path: release-sets/preview-2026-07-23.json
+```
+
 Use the `v1` tag for compatible fixes, or pin a full commit when every action
 update must be reviewed.
 

@@ -1,0 +1,43 @@
+name: PawnKit release set
+on:
+  workflow_call:
+    inputs:
+      spec-ref:
+        description: Exact pawnkit-spec tag or commit
+        required: true
+        type: string
+      set-path:
+        description: Path below pawnkit-spec
+        required: true
+        type: string
+      verify-remote:
+        description: Verify public release data
+        required: false
+        default: true
+        type: boolean
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          repository: pawnkit/pawnkit-spec
+          ref: ${{ inputs.spec-ref }}
+          path: .pawnkit/spec
+          persist-credentials: false
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          repository: pawnkit/pawn-actions
+          ref: ${{ github.workflow_sha }}
+          path: .pawnkit/actions
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version-file: .pawnkit/actions/go.mod
+          cache-dependency-path: .pawnkit/actions/go.sum
+      - uses: ./.pawnkit/actions/release-set
+        with:
+          release-set: .pawnkit/spec/${{ inputs.set-path }}
+          verify-remote: ${{ inputs.verify-remote }}
