@@ -2,6 +2,12 @@
 
 Notable changes are recorded here.
 
+## 1.4.6 - 2026-07-24
+
+### Fixed
+
+- Use the compiler archive's actual library directory.
+
 ## 1.4.5 - 2026-07-24
 
 ### Fixed

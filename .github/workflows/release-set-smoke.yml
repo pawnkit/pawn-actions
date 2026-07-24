@@ -193,7 +193,7 @@ jobs:
     needs: validate
     runs-on: ubuntu-latest
     env:
-      LD_LIBRARY_PATH: ${{ github.workspace }}/pawnc-3.10.10-linux/bin
+      LD_LIBRARY_PATH: ${{ github.workspace }}/pawnc-3.10.10-linux/lib
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
