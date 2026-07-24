@@ -212,6 +212,11 @@ jobs:
           version: 1.2.0
           download-url: https://github.com/pawnkit/pawnkit-cli/releases/download/v1.2.0/pawn-linux-amd64.tar.gz
           sha256: 530b6da4c697a3dbc8d19498ea730025191f667b0af4d390ac20d98e263e8e5a
+      - name: Install 32-bit compiler runtime
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libc6-i386
       - name: Install Pawn 3.10.10
         shell: bash
         run: |

@@ -2,6 +2,12 @@
 
 Notable changes are recorded here.
 
+## 1.4.5 - 2026-07-24
+
+### Fixed
+
+- Install the 32-bit runtime required by the pinned Pawn compiler.
+
 ## 1.4.4 - 2026-07-23
 
 ### Changed
