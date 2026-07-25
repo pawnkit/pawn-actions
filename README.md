@@ -83,6 +83,18 @@ The release-set action can also select an archive for a runner:
     sha256: ${{ steps.pawn.outputs.sha256 }}
 ```
 
+## Check support claims
+
+Repositories can validate `.pawnkit/support.json` against the targets covered
+by their CI:
+
+```yaml
+- uses: pawnkit/pawn-actions/support-check@v1.6.0
+  with:
+    repository: pawnkit/pawnlint
+    targets: linux-amd64,windows-amd64,darwin-arm64
+```
+
 Use `setup-tool` for the other binaries selected from a release set:
 
 ```yaml

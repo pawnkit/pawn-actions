@@ -1,0 +1,30 @@
+name: Check PawnKit support record
+description: Validate a repository support record against its CI targets
+inputs:
+  record:
+    description: Support record path
+    default: .pawnkit/support.json
+  repository:
+    description: Expected pawnkit/name repository
+    required: true
+  targets:
+    description: Comma-separated targets covered by CI
+    required: true
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        PAWN_SUPPORT_RECORD: ${{ inputs.record }}
+        PAWN_SUPPORT_REPOSITORY: ${{ inputs.repository }}
+        PAWN_SUPPORT_TARGETS: ${{ inputs.targets }}
+      run: |
+        case "$PAWN_SUPPORT_RECORD" in
+          /*|[A-Za-z]:*) record="$PAWN_SUPPORT_RECORD" ;;
+          *) record="$GITHUB_WORKSPACE/$PAWN_SUPPORT_RECORD" ;;
+        esac
+        cd "$GITHUB_ACTION_PATH/.."
+        go run ./cmd/pawn-support-check \
+          -repository "$PAWN_SUPPORT_REPOSITORY" \
+          -targets "$PAWN_SUPPORT_TARGETS" \
+          "$record"

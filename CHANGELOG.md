@@ -2,6 +2,12 @@
 
 Notable changes are recorded here.
 
+## 1.6.0 - 2026-07-25
+
+### Added
+
+- Added support-record validation against repository CI targets.
+
 ## 1.5.4 - 2026-07-25
 
 ### Fixed

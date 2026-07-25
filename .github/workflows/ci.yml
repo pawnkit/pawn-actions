@@ -51,6 +51,8 @@ jobs:
       - if: ${{ runner.os == 'Linux' }}
         run: go run ./cmd/pawn-release-set .test/pawnkit-spec/examples/pawn-release-set-v2/valid.json
       - if: ${{ runner.os == 'Linux' }}
+        run: go run ./cmd/pawn-support-check -repository pawnkit/pawnlint -targets linux-amd64,windows-amd64,darwin-arm64 .test/pawnkit-spec/examples/pawn-support/valid.json
+      - if: ${{ runner.os == 'Linux' }}
         uses: ./release-set
         with:
           release-set: .test/pawnkit-spec/examples/pawn-release-set/valid.json
