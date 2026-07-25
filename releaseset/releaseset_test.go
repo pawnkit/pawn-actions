@@ -89,6 +89,47 @@ func TestValidateRequiresMatchingEvidence(t *testing.T) {
 	}
 }
 
+func TestValidateVersionTwoModuleGraph(t *testing.T) {
+	t.Parallel()
+
+	set := validSet([]byte("archive"))
+	set.SchemaVersion = 2
+	set.ModuleGraph = []Module{
+		{
+			Repository: "pawnkit/pawnkit-cli",
+			Module:     "github.com/pawnkit/pawnkit-cli",
+			Version:    "v1.3.0",
+			Commit:     strings.Repeat("2", 40),
+			Dependencies: []Dependency{
+				{
+					Repository: "pawnkit/pawn-project",
+					Version:    "v0.3.0",
+					Kind:       "runtime",
+				},
+			},
+		},
+		{
+			Repository:   "pawnkit/pawn-project",
+			Module:       "github.com/pawnkit/pawn-project",
+			Version:      "v0.3.0",
+			Commit:       strings.Repeat("3", 40),
+			Dependencies: []Dependency{},
+		},
+	}
+	if err := set.Validate(); err != nil {
+		t.Fatalf("Validate: %v", err)
+	}
+
+	set.ModuleGraph[0].Dependencies[0] = Dependency{
+		Repository: "pawnkit/pawn-corpus",
+		Version:    "v0.1.10",
+		Kind:       "test",
+	}
+	if err := set.Validate(); err == nil || !strings.Contains(err.Error(), "requires provenance") {
+		t.Fatalf("Validate error = %v", err)
+	}
+}
+
 func TestVerifyArtifacts(t *testing.T) {
 	t.Parallel()
 
@@ -212,6 +253,54 @@ func TestValidateGoMod(t *testing.T) {
 		if err := ValidateGoMod("go.mod", content); err == nil {
 			t.Fatalf("ValidateGoMod(%q) succeeded", content)
 		}
+	}
+}
+
+func TestValidateGoModuleGraph(t *testing.T) {
+	t.Parallel()
+
+	modules := []GoModule{
+		{
+			Repository: "pawn-analysis",
+			Dependencies: []GoDependency{
+				{Repository: "pawn-parser", Version: "v0.1.0"},
+			},
+		},
+		{Repository: "pawn-parser"},
+	}
+	if err := ValidateGoModuleGraph(modules); err != nil {
+		t.Fatalf("ValidateGoModuleGraph: %v", err)
+	}
+
+	modules[1].Dependencies = []GoDependency{
+		{Repository: "pawn-analysis", Version: "v0.1.0"},
+	}
+	if err := ValidateGoModuleGraph(modules); err == nil ||
+		!strings.Contains(err.Error(), "reversed dependency") {
+		t.Fatalf("ValidateGoModuleGraph error = %v", err)
+	}
+}
+
+func TestValidateGoModuleGraphRejectsSameLayerCycle(t *testing.T) {
+	t.Parallel()
+
+	modules := []GoModule{
+		{
+			Repository: "pawnlint",
+			Dependencies: []GoDependency{
+				{Repository: "pawnfmt", Version: "v1.0.0"},
+			},
+		},
+		{
+			Repository: "pawnfmt",
+			Dependencies: []GoDependency{
+				{Repository: "pawnlint", Version: "v1.0.0"},
+			},
+		},
+	}
+	if err := ValidateGoModuleGraph(modules); err == nil ||
+		!strings.Contains(err.Error(), "dependency cycle") {
+		t.Fatalf("ValidateGoModuleGraph error = %v", err)
 	}
 }
 

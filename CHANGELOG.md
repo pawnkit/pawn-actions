@@ -2,6 +2,12 @@
 
 Notable changes are recorded here.
 
+## 1.5.0 - 2026-07-25
+
+### Added
+
+- Validate release-set v2 module graphs, dependency layers, and cycles.
+
 ## 1.4.8 - 2026-07-25
 
 ### Changed

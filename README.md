@@ -52,17 +52,18 @@ Add `-verify-remote` before publication. It checks tag commits, hosted schemas,
 workflow evidence, artifact sizes, and SHA-256 hashes. Use `-verify-artifacts`
 when only the archives need checking.
 
-The command also rejects unknown fields, local replacements, PawnKit
-pseudo-versions, duplicate entries, and artifacts for untested targets.
+Repeat `-go-mod` to validate the organisation graph. The command rejects
+reversed edges, cycles, local replacements, pseudo-versions, duplicate
+entries, and artifacts for untested targets. Release-set v2 stores that graph.
 
 Repositories can call the shared validation workflow:
 
 ```yaml
 jobs:
   release-set:
-    uses: pawnkit/pawn-actions/.github/workflows/release-set.yml@v1.2.2
+    uses: pawnkit/pawn-actions/.github/workflows/release-set.yml@v1.5.0
     with:
-      spec-ref: v0.1.10
+      spec-ref: v0.1.27
       set-path: release-sets/preview-2026-07-23.json
 ```
 

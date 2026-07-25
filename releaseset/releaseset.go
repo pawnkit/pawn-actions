@@ -43,6 +43,7 @@ type Set struct {
 	Targets       []string    `json:"targets"`
 	Profiles      []string    `json:"profiles"`
 	Components    []Component `json:"components"`
+	ModuleGraph   []Module    `json:"moduleGraph,omitempty"`
 	Schemas       []Schema    `json:"schemas"`
 	Evidence      Evidence    `json:"evidence"`
 	KnownLimits   []string    `json:"knownLimits"`
@@ -66,6 +67,21 @@ type Artifact struct {
 	URL      string `json:"url"`
 	Size     int64  `json:"size"`
 	Checksum string `json:"checksum"`
+}
+
+type Module struct {
+	Repository   string       `json:"repository"`
+	Module       string       `json:"module"`
+	Version      string       `json:"version"`
+	Commit       string       `json:"commit"`
+	Dependencies []Dependency `json:"dependencies"`
+}
+
+type Dependency struct {
+	Repository string `json:"repository"`
+	Version    string `json:"version"`
+	Kind       string `json:"kind"`
+	Provenance string `json:"provenance,omitempty"`
 }
 
 type Schema struct {
@@ -121,7 +137,7 @@ func ensureEOF(decoder *json.Decoder) error {
 }
 
 func (set Set) Validate() error {
-	if set.SchemaVersion != 1 {
+	if set.SchemaVersion != 1 && set.SchemaVersion != 2 {
 		return fmt.Errorf("release set: unsupported schema version %d", set.SchemaVersion)
 	}
 	if !idPattern.MatchString(set.ID) {
@@ -148,6 +164,13 @@ func (set Set) Validate() error {
 	if err := validateComponents(set.Components, set.Targets); err != nil {
 		return err
 	}
+	if set.SchemaVersion == 2 {
+		if err := validateModuleGraph(set.ModuleGraph); err != nil {
+			return err
+		}
+	} else if len(set.ModuleGraph) != 0 {
+		return errors.New("release set: moduleGraph requires schema version 2")
+	}
 	if err := validateSchemas(set.Schemas); err != nil {
 		return err
 	}
@@ -173,6 +196,94 @@ func (set Set) Validate() error {
 		}
 	}
 	return nil
+}
+
+func validateModuleGraph(modules []Module) error {
+	if len(modules) == 0 || len(modules) > 128 {
+		return errors.New("release set: moduleGraph must contain 1 to 128 entries")
+	}
+	graph := make([]GoModule, 0, len(modules))
+	seen := make(map[string]struct{}, len(modules))
+	versions := make(map[string]string, len(modules))
+	for _, current := range modules {
+		versions[strings.TrimPrefix(current.Repository, "pawnkit/")] = current.Version
+	}
+	for _, current := range modules {
+		repository := strings.TrimPrefix(current.Repository, "pawnkit/")
+		if !repoPattern.MatchString(current.Repository) ||
+			current.Module != "github.com/pawnkit/"+repository ||
+			!versionPattern.MatchString(current.Version) ||
+			!commitPattern.MatchString(current.Commit) {
+			return fmt.Errorf("release set: invalid module %q", current.Repository)
+		}
+		if _, exists := seen[repository]; exists {
+			return fmt.Errorf("release set: duplicate module %q", current.Repository)
+		}
+		seen[repository] = struct{}{}
+
+		node := GoModule{Path: current.Module, Repository: repository}
+		dependencies := make(map[string]struct{}, len(current.Dependencies))
+		for _, dependency := range current.Dependencies {
+			dependencyRepository := strings.TrimPrefix(dependency.Repository, "pawnkit/")
+			if !repoPattern.MatchString(dependency.Repository) ||
+				!versionPattern.MatchString(dependency.Version) {
+				return fmt.Errorf(
+					"release set: module %q has invalid dependency",
+					current.Repository,
+				)
+			}
+			if _, exists := dependencies[dependencyRepository]; exists {
+				return fmt.Errorf(
+					"release set: module %q repeats dependency %q",
+					current.Repository,
+					dependency.Repository,
+				)
+			}
+			dependencies[dependencyRepository] = struct{}{}
+			switch dependency.Kind {
+			case "runtime":
+				if dependency.Provenance != "" {
+					return fmt.Errorf(
+						"release set: runtime dependency %s -> %s has provenance",
+						current.Repository,
+						dependency.Repository,
+					)
+				}
+			case "test", "generated":
+				if dependency.Provenance == "" || len(dependency.Provenance) > 1024 {
+					return fmt.Errorf(
+						"release set: dependency %s -> %s requires provenance",
+						current.Repository,
+						dependency.Repository,
+					)
+				}
+			default:
+				return fmt.Errorf(
+					"release set: dependency %s -> %s has invalid kind",
+					current.Repository,
+					dependency.Repository,
+				)
+			}
+			if dependency.Kind == "runtime" {
+				if version, included := versions[dependencyRepository]; included &&
+					version != dependency.Version {
+					return fmt.Errorf(
+						"release set: dependency %s -> %s has version %s, graph records %s",
+						current.Repository,
+						dependency.Repository,
+						dependency.Version,
+						version,
+					)
+				}
+				node.Dependencies = append(node.Dependencies, GoDependency{
+					Repository: dependencyRepository,
+					Version:    dependency.Version,
+				})
+			}
+		}
+		graph = append(graph, node)
+	}
+	return ValidateGoModuleGraph(graph)
 }
 
 func validateSource(source Source) error {

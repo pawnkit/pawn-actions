@@ -73,14 +73,20 @@ func run(path string, modules []string, options runOptions) error {
 	if err != nil {
 		return err
 	}
+	goModules := make([]releaseset.GoModule, 0, len(modules))
 	for _, modulePath := range modules {
 		content, readErr := os.ReadFile(modulePath) //nolint:gosec // The path is an explicit CLI argument.
 		if readErr != nil {
 			return fmt.Errorf("read %s: %w", modulePath, readErr)
 		}
-		if err := releaseset.ValidateGoMod(modulePath, content); err != nil {
-			return err
+		module, parseErr := releaseset.ParseGoMod(modulePath, content)
+		if parseErr != nil {
+			return parseErr
 		}
+		goModules = append(goModules, module)
+	}
+	if err := releaseset.ValidateGoModuleGraph(goModules); err != nil {
+		return err
 	}
 	if options.verifyRemote {
 		client := &http.Client{Timeout: 5 * time.Minute}
