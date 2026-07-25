@@ -2,6 +2,12 @@
 
 Notable changes are recorded here.
 
+## 1.5.2 - 2026-07-25
+
+### Fixed
+
+- Record separate dependency graphs when released tools use different module versions.
+
 ## 1.5.1 - 2026-07-25
 
 ### Fixed

@@ -204,10 +204,6 @@ func validateModuleGraph(modules []Module) error {
 	}
 	graph := make([]GoModule, 0, len(modules))
 	seen := make(map[string]struct{}, len(modules))
-	versions := make(map[string]string, len(modules))
-	for _, current := range modules {
-		versions[strings.TrimPrefix(current.Repository, "pawnkit/")] = current.Version
-	}
 	for _, current := range modules {
 		repository := strings.TrimPrefix(current.Repository, "pawnkit/")
 		if !repoPattern.MatchString(current.Repository) ||
@@ -216,12 +212,17 @@ func validateModuleGraph(modules []Module) error {
 			!commitPattern.MatchString(current.Commit) {
 			return fmt.Errorf("release set: invalid module %q", current.Repository)
 		}
-		if _, exists := seen[repository]; exists {
-			return fmt.Errorf("release set: duplicate module %q", current.Repository)
+		key := moduleKey(repository, current.Version)
+		if _, exists := seen[key]; exists {
+			return fmt.Errorf("release set: duplicate module %q", key)
 		}
-		seen[repository] = struct{}{}
+		seen[key] = struct{}{}
 
-		node := GoModule{Path: current.Module, Repository: repository}
+		node := GoModule{
+			Path:       current.Module,
+			Repository: repository,
+			Version:    current.Version,
+		}
 		dependencies := make(map[string]struct{}, len(current.Dependencies))
 		for _, dependency := range current.Dependencies {
 			dependencyRepository := strings.TrimPrefix(dependency.Repository, "pawnkit/")
@@ -265,16 +266,6 @@ func validateModuleGraph(modules []Module) error {
 				)
 			}
 			if dependency.Kind == "runtime" {
-				if version, included := versions[dependencyRepository]; included &&
-					version != dependency.Version {
-					return fmt.Errorf(
-						"release set: dependency %s -> %s has version %s, graph records %s",
-						current.Repository,
-						dependency.Repository,
-						dependency.Version,
-						version,
-					)
-				}
 				node.Dependencies = append(node.Dependencies, GoDependency{
 					Repository: dependencyRepository,
 					Version:    dependency.Version,

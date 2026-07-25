@@ -14,6 +14,7 @@ import (
 type GoModule struct {
 	Path         string
 	Repository   string
+	Version      string
 	Dependencies []GoDependency
 }
 
@@ -69,7 +70,8 @@ func ParseGoMod(filePath string, content []byte) (GoModule, error) {
 }
 
 func ValidateGoModuleGraph(modules []GoModule) error {
-	byRepository := make(map[string]GoModule, len(modules))
+	byKey := make(map[string]GoModule, len(modules))
+	keysByRepository := make(map[string][]string, len(modules))
 	for _, current := range modules {
 		if current.Repository == "" {
 			continue
@@ -77,10 +79,12 @@ func ValidateGoModuleGraph(modules []GoModule) error {
 		if _, ok := dependencyLayer[current.Repository]; !ok {
 			return fmt.Errorf("release set: unclassified PawnKit repository %q", current.Repository)
 		}
-		if _, exists := byRepository[current.Repository]; exists {
-			return fmt.Errorf("release set: duplicate module for %q", current.Repository)
+		key := moduleKey(current.Repository, current.Version)
+		if _, exists := byKey[key]; exists {
+			return fmt.Errorf("release set: duplicate module for %q", key)
 		}
-		byRepository[current.Repository] = current
+		byKey[key] = current
+		keysByRepository[current.Repository] = append(keysByRepository[current.Repository], key)
 	}
 
 	for _, current := range modules {
@@ -109,32 +113,44 @@ func ValidateGoModuleGraph(modules []GoModule) error {
 		}
 	}
 
-	state := make(map[string]uint8, len(byRepository))
+	state := make(map[string]uint8, len(byKey))
 	var visit func(string) error
-	visit = func(repository string) error {
-		switch state[repository] {
+	visit = func(key string) error {
+		switch state[key] {
 		case 1:
-			return fmt.Errorf("release set: dependency cycle contains %s", repository)
+			return fmt.Errorf("release set: dependency cycle contains %s", key)
 		case 2:
 			return nil
 		}
-		state[repository] = 1
-		for _, dependency := range byRepository[repository].Dependencies {
-			if _, included := byRepository[dependency.Repository]; included {
-				if err := visit(dependency.Repository); err != nil {
+		state[key] = 1
+		for _, dependency := range byKey[key].Dependencies {
+			dependencyKey := moduleKey(dependency.Repository, dependency.Version)
+			if _, included := byKey[dependencyKey]; !included &&
+				len(keysByRepository[dependency.Repository]) == 1 {
+				dependencyKey = keysByRepository[dependency.Repository][0]
+			}
+			if _, included := byKey[dependencyKey]; included {
+				if err := visit(dependencyKey); err != nil {
 					return err
 				}
 			}
 		}
-		state[repository] = 2
+		state[key] = 2
 		return nil
 	}
-	for repository := range byRepository {
-		if err := visit(repository); err != nil {
+	for key := range byKey {
+		if err := visit(key); err != nil {
 			return err
 		}
 	}
 	return nil
+}
+
+func moduleKey(repository string, version string) string {
+	if version == "" {
+		return repository
+	}
+	return repository + "@" + version
 }
 
 func pawnkitRepository(modulePath string) string {

@@ -333,6 +333,18 @@ func TestValidateGoModuleGraphRejectsSameLayerCycle(t *testing.T) {
 	}
 }
 
+func TestValidateGoModuleGraphAllowsSeveralReleasedVersions(t *testing.T) {
+	t.Parallel()
+
+	modules := []GoModule{
+		{Repository: "pawn-project", Version: "v0.1.9"},
+		{Repository: "pawn-project", Version: "v0.3.0"},
+	}
+	if err := ValidateGoModuleGraph(modules); err != nil {
+		t.Fatalf("ValidateGoModuleGraph: %v", err)
+	}
+}
+
 func TestSelectArtifact(t *testing.T) {
 	t.Parallel()
 
