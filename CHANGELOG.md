@@ -2,6 +2,12 @@
 
 Notable changes are recorded here.
 
+## 1.5.4 - 2026-07-25
+
+### Fixed
+
+- Avoid downloading every tool archive before the smoke matrix downloads them.
+
 ## 1.5.3 - 2026-07-25
 
 ### Changed

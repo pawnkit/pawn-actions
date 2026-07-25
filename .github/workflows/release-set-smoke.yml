@@ -67,7 +67,7 @@ jobs:
       - uses: ./.pawnkit/actions/release-set
         with:
           release-set: .pawnkit/spec/${{ env.SET_PATH }}
-          verify-remote: 'true'
+          verify-remote: 'false'
       - uses: ./.pawnkit/actions/release-set
         with:
           release-set: .pawnkit/spec/release-sets/dependency-preview-2026-07-25.json
