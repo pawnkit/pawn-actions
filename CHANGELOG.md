@@ -2,6 +2,12 @@
 
 Notable changes are recorded here.
 
+## 1.5.1 - 2026-07-25
+
+### Fixed
+
+- Verify every module graph tag and commit before publication.
+
 ## 1.5.0 - 2026-07-25
 
 ### Added

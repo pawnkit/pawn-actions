@@ -219,6 +219,35 @@ func TestVerifyRemoteRejectsWrongTagCommit(t *testing.T) {
 	}
 }
 
+func TestVerifyRemoteChecksVersionTwoModules(t *testing.T) {
+	t.Parallel()
+
+	set := validSet([]byte("archive"))
+	set.SchemaVersion = 2
+	set.ModuleGraph = []Module{
+		{
+			Repository:   "pawnkit/pawn-project",
+			Module:       "github.com/pawnkit/pawn-project",
+			Version:      "v0.3.0",
+			Commit:       strings.Repeat("3", 40),
+			Dependencies: []Dependency{},
+		},
+	}
+	client := routeClient(func(request *http.Request) (*http.Response, error) {
+		if strings.Contains(request.URL.Path, "/pawnkit/pawn-project/") {
+			return response(http.StatusNotFound, nil), nil
+		}
+		if strings.Contains(request.URL.Path, "/commits/") {
+			return response(http.StatusOK, []byte(`{"sha":"`+set.Components[0].Commit+`"}`)), nil
+		}
+		return response(http.StatusOK, nil), nil
+	})
+	if err := VerifyRemote(t.Context(), client, set); err == nil ||
+		!strings.Contains(err.Error(), `module "pawnkit/pawn-project"`) {
+		t.Fatalf("VerifyRemote error = %v", err)
+	}
+}
+
 func TestVerifyRemoteRejectsFailedWorkflow(t *testing.T) {
 	t.Parallel()
 

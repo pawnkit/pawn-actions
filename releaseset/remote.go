@@ -37,6 +37,11 @@ func VerifyRemote(ctx context.Context, client HTTPClient, set Set) error {
 			return err
 		}
 	}
+	for _, module := range set.ModuleGraph {
+		if err := verifyModule(ctx, client, module); err != nil {
+			return err
+		}
+	}
 	for _, schema := range set.Schemas {
 		if err := verifySchema(ctx, client, schema); err != nil {
 			return err
@@ -49,17 +54,37 @@ func VerifyRemote(ctx context.Context, client HTTPClient, set Set) error {
 }
 
 func verifyComponent(ctx context.Context, client HTTPClient, component Component) error {
+	if err := verifyTag(ctx, client, component.Repository, component.Version, component.Commit); err != nil {
+		return fmt.Errorf("release set: component %q: %w", component.Name, err)
+	}
+	return nil
+}
+
+func verifyModule(ctx context.Context, client HTTPClient, module Module) error {
+	if err := verifyTag(ctx, client, module.Repository, module.Version, module.Commit); err != nil {
+		return fmt.Errorf("release set: module %q: %w", module.Repository, err)
+	}
+	return nil
+}
+
+func verifyTag(
+	ctx context.Context,
+	client HTTPClient,
+	repository string,
+	version string,
+	commit string,
+) error {
 	endpoint := fmt.Sprintf(
 		"https://api.github.com/repos/%s/commits/%s",
-		component.Repository,
-		url.PathEscape(component.Version),
+		repository,
+		url.PathEscape(version),
 	)
 	var response commitResponse
 	if err := getJSON(ctx, client, endpoint, &response); err != nil {
-		return fmt.Errorf("release set: component %q: %w", component.Name, err)
+		return err
 	}
-	if response.SHA != component.Commit {
-		return fmt.Errorf("release set: component %q tag resolves to %q, want %q", component.Name, response.SHA, component.Commit)
+	if response.SHA != commit {
+		return fmt.Errorf("tag resolves to %q, want %q", response.SHA, commit)
 	}
 	return nil
 }
