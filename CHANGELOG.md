@@ -2,6 +2,12 @@
 
 Notable changes are recorded here.
 
+## 1.5.3 - 2026-07-25
+
+### Changed
+
+- Validate the release-set v2 dependency candidate in the toolchain smoke test.
+
 ## 1.5.2 - 2026-07-25
 
 ### Fixed
