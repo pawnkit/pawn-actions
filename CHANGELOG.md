@@ -2,6 +2,12 @@
 
 Notable changes are recorded here.
 
+## 1.4.8 - 2026-07-25
+
+### Changed
+
+- Smoke the current linter and language server release candidate.
+
 ## 1.4.7 - 2026-07-25
 
 ### Changed
