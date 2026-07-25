@@ -2,6 +2,12 @@
 
 Notable changes are recorded here.
 
+## 1.4.7 - 2026-07-25
+
+### Changed
+
+- Smoke CLI v1.3.0 and build-backend schema v2.
+
 ## 1.4.6 - 2026-07-24
 
 ### Fixed
