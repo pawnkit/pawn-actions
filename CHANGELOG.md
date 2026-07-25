@@ -2,6 +2,12 @@
 
 Notable changes are recorded here.
 
+## 1.6.1 - 2026-07-25
+
+### Fixed
+
+- Set up the validator's Go version inside the support-check action.
+
 ## 1.6.0 - 2026-07-25
 
 ### Added
