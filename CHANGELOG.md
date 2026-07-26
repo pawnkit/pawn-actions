@@ -2,11 +2,12 @@
 
 Notable changes are recorded here.
 
-## Unreleased
+## 1.6.3 - 2026-07-26
 
 ### Changed
 
 - Smoke-test the latest CLI, formatter, linter, language server, and test runner releases.
+- Use the July 26 tested release set as the default for compatibility smoke tests.
 
 ## 1.6.2 - 2026-07-25
 

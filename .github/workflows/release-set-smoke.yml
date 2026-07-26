@@ -15,11 +15,11 @@ on:
       spec-ref:
         description: Exact pawnkit-spec tag or commit
         required: true
-        default: v0.1.28
+        default: v0.1.34
       set-path:
         description: Path below pawnkit-spec
         required: true
-        default: release-sets/toolchain-preview-2026-07-25.json
+        default: release-sets/toolchain-preview-2026-07-26.json
       corpus-ref:
         description: Exact pawn-corpus tag or commit
         required: true
@@ -41,8 +41,8 @@ on:
 permissions:
   contents: read
 env:
-  SPEC_REF: ${{ inputs.spec-ref || 'v0.1.28' }}
-  SET_PATH: ${{ inputs.set-path || 'release-sets/toolchain-preview-2026-07-25.json' }}
+  SPEC_REF: ${{ inputs.spec-ref || 'v0.1.34' }}
+  SET_PATH: ${{ inputs.set-path || 'release-sets/toolchain-preview-2026-07-26.json' }}
   CORPUS_REF: ${{ inputs.corpus-ref || 'v0.1.11' }}
 jobs:
   validate:
@@ -67,7 +67,7 @@ jobs:
       - uses: ./.pawnkit/actions/release-set
         with:
           release-set: .pawnkit/spec/${{ env.SET_PATH }}
-          verify-remote: 'false'
+          verify-remote: 'true'
       - uses: ./.pawnkit/actions/release-set
         with:
           release-set: .pawnkit/spec/release-sets/dependency-preview-2026-07-25.json
@@ -81,28 +81,10 @@ jobs:
         include:
           - os: ubuntu-latest
             target: linux-amd64
-            archive-target: linux_amd64.tar.gz
-            pawn-sha256: 466e99ad7e9f743928e5dac2b9c779255b5adbd414cde366ff0e7a6159a63365
-            pawnfmt-sha256: a63a13b81508c73062fbb7460e100195a8326084c1bf75594bf2e14029176cbc
-            pawnlint-sha256: bc011fea1c27ef0c1f648c8a821c62e99cc8a1f747ff8ff6c1bf074a35b0ea84
-            pawnlsp-sha256: 84294736a7f4387cccccb4c894ad9719f9e67ae1e162ca426bddcf655e1b085a
-            pawntest-sha256: 75bd68ecb106ded60096e860b636efcfb1750eacb7e3c383eb72d6d44cc93364
           - os: windows-latest
             target: windows-amd64
-            archive-target: windows_amd64.zip
-            pawn-sha256: 85aedd392ab26e45935dfe962ade5d18573ed8e8b3f81500b540523a651e7907
-            pawnfmt-sha256: 0caabe3aac720b145c705d1a7916816a83de6097d436688db080feb1a9ca4168
-            pawnlint-sha256: 7b8f17f8519dd2a4338fbc70174c1a376fdf4459d66db7798c773de3ca2d3165
-            pawnlsp-sha256: 754c9946a15396b993e72c80e3ff89e523301c6ca3b641dc136eeb46f6fea8d1
-            pawntest-sha256: c7a6a727cb9382c5f6668a95c59888411490a1a5abddd298cee7bf33975d6bcd
           - os: macos-latest
             target: darwin-arm64
-            archive-target: darwin_arm64.tar.gz
-            pawn-sha256: c56d06c3f81eb96f0f389a40c7f2cb7141e7ed69740b97fe71c4de04818a5773
-            pawnfmt-sha256: e57408e4075add7e7976167419df7011ebea30ba470a8557e4b0cf73d261ed37
-            pawnlint-sha256: dc6cb8d83fc057b279627d064994a1186e66203f98274ebd1c571a16f5371590
-            pawnlsp-sha256: e790b7f1b4ae6be0440f03d7cce80d23489b806adc858f42580258d690d6e3be
-            pawntest-sha256: e8cc703039722bb56ee60e2e7b5e3633a5eeb706d2a2e9d7187211beaa79edf6
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
@@ -127,36 +109,72 @@ jobs:
         with:
           go-version-file: .pawnkit/actions/go.mod
           cache-dependency-path: .pawnkit/actions/go.sum
-      - uses: ./.pawnkit/actions/setup
+      - id: pawn
+        uses: ./.pawnkit/actions/release-set
         with:
-          version: 1.3.1
-          download-url: https://github.com/pawnkit/pawnkit-cli/releases/download/v1.3.1/pawn-${{ matrix.target }}.tar.gz
-          sha256: ${{ matrix.pawn-sha256 }}
+          release-set: .pawnkit/spec/${{ env.SET_PATH }}
+          verify-remote: 'false'
+          component: pawn
+          target: ${{ matrix.target }}
+      - uses: ./.pawnkit/actions/setup-tool
+        with:
+          binary: pawn
+          version: ${{ steps.pawn.outputs.version }}
+          download-url: ${{ steps.pawn.outputs.url }}
+          sha256: ${{ steps.pawn.outputs.sha256 }}
+      - id: pawnfmt
+        uses: ./.pawnkit/actions/release-set
+        with:
+          release-set: .pawnkit/spec/${{ env.SET_PATH }}
+          verify-remote: 'false'
+          component: pawnfmt
+          target: ${{ matrix.target }}
       - uses: ./.pawnkit/actions/setup-tool
         with:
           binary: pawnfmt
-          version: v1.3.6
-          download-url: https://github.com/pawnkit/pawnfmt/releases/download/v1.3.6/pawnfmt_1.3.6_${{ matrix.archive-target }}
-          sha256: ${{ matrix.pawnfmt-sha256 }}
+          version: ${{ steps.pawnfmt.outputs.version }}
+          download-url: ${{ steps.pawnfmt.outputs.url }}
+          sha256: ${{ steps.pawnfmt.outputs.sha256 }}
+      - id: pawnlint
+        uses: ./.pawnkit/actions/release-set
+        with:
+          release-set: .pawnkit/spec/${{ env.SET_PATH }}
+          verify-remote: 'false'
+          component: pawnlint
+          target: ${{ matrix.target }}
       - uses: ./.pawnkit/actions/setup-tool
         with:
           binary: pawnlint
-          version: v1.1.11
-          download-url: https://github.com/pawnkit/pawnlint/releases/download/v1.1.11/pawnlint_1.1.11_${{ matrix.archive-target }}
-          sha256: ${{ matrix.pawnlint-sha256 }}
+          version: ${{ steps.pawnlint.outputs.version }}
+          download-url: ${{ steps.pawnlint.outputs.url }}
+          sha256: ${{ steps.pawnlint.outputs.sha256 }}
+      - id: pawnlsp
+        uses: ./.pawnkit/actions/release-set
+        with:
+          release-set: .pawnkit/spec/${{ env.SET_PATH }}
+          verify-remote: 'false'
+          component: pawnlsp
+          target: ${{ matrix.target }}
       - uses: ./.pawnkit/actions/setup-tool
         with:
           binary: pawnlsp
-          version: v0.26.11
-          download-url: https://github.com/pawnkit/pawnlsp/releases/download/v0.26.11/pawnlsp_0.26.11_${{ matrix.archive-target }}
-          sha256: ${{ matrix.pawnlsp-sha256 }}
+          version: ${{ steps.pawnlsp.outputs.version }}
+          download-url: ${{ steps.pawnlsp.outputs.url }}
+          sha256: ${{ steps.pawnlsp.outputs.sha256 }}
+      - id: pawntest
+        uses: ./.pawnkit/actions/release-set
+        with:
+          release-set: .pawnkit/spec/${{ env.SET_PATH }}
+          verify-remote: 'false'
+          component: pawntest
+          target: ${{ matrix.target }}
       - id: pawntest-install
         uses: ./.pawnkit/actions/setup-tool
         with:
           binary: pawntest
-          version: v1.2.2
-          download-url: https://github.com/pawnkit/pawntest/releases/download/v1.2.2/pawntest_1.2.2_${{ matrix.archive-target }}
-          sha256: ${{ matrix.pawntest-sha256 }}
+          version: ${{ steps.pawntest.outputs.version }}
+          download-url: ${{ steps.pawntest.outputs.url }}
+          sha256: ${{ steps.pawntest.outputs.sha256 }}
       - name: Check installed tools
         shell: bash
         run: |
