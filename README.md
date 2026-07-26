@@ -1,5 +1,7 @@
 # pawn-actions
 
+[![Maturity: infrastructure](https://img.shields.io/badge/maturity-infrastructure-lightgrey)](.pawnkit/support.json)
+
 Use the same PawnKit checks in GitHub Actions that you run locally.
 
 Start by installing a published `pawn` release, then run the check action:

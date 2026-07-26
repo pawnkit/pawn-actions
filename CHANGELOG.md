@@ -2,6 +2,12 @@
 
 Notable changes are recorded here.
 
+## 1.6.2 - 2026-07-25
+
+### Changed
+
+- Publish the repository support record and validate it in CI.
+
 ## 1.6.1 - 2026-07-25
 
 ### Fixed

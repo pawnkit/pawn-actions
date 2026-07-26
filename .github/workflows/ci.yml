@@ -91,3 +91,12 @@ jobs:
           go-version-file: go.mod
           cache: true
       - run: go tool govulncheck ./...
+
+  support:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: ./support-check
+        with:
+          repository: pawnkit/pawn-actions
+          targets: linux-amd64,windows-amd64,darwin-arm64
