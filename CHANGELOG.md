@@ -2,6 +2,12 @@
 
 Notable changes are recorded here.
 
+## 1.6.4 - 2026-07-26
+
+### Fixed
+
+- Updated the installer CI matrix to the current tested linter release.
+
 ## 1.6.3 - 2026-07-26
 
 ### Changed

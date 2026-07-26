@@ -11,14 +11,14 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            pawnlint-asset: pawnlint_1.1.4_linux_amd64.tar.gz
-            pawnlint-sha256: 55c08f79e5805ae176ba195b6994b36902f143cee302fe381feebce91a54e4b1
+            pawnlint-asset: pawnlint_1.1.11_linux_amd64.tar.gz
+            pawnlint-sha256: bc011fea1c27ef0c1f648c8a821c62e99cc8a1f747ff8ff6c1bf074a35b0ea84
           - os: windows-latest
-            pawnlint-asset: pawnlint_1.1.4_windows_amd64.zip
-            pawnlint-sha256: 29466f46db85b35353fab2ee9964e4e6c7d3f1158548b56a45f9e86b0a988a2b
+            pawnlint-asset: pawnlint_1.1.11_windows_amd64.zip
+            pawnlint-sha256: 7b8f17f8519dd2a4338fbc70174c1a376fdf4459d66db7798c773de3ca2d3165
           - os: macos-latest
-            pawnlint-asset: pawnlint_1.1.4_darwin_arm64.tar.gz
-            pawnlint-sha256: e7d5f6fd2c2a99888ef9590c18660e3ae47f99736a58a33022a30ad394fe4c58
+            pawnlint-asset: pawnlint_1.1.11_darwin_arm64.tar.gz
+            pawnlint-sha256: dc6cb8d83fc057b279627d064994a1186e66203f98274ebd1c571a16f5371590
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
@@ -31,8 +31,8 @@ jobs:
       - uses: ./setup-tool
         with:
           binary: pawnlint
-          version: v1.1.4
-          download-url: https://github.com/pawnkit/pawnlint/releases/download/v1.1.4/${{ matrix.pawnlint-asset }}
+          version: v1.1.11
+          download-url: https://github.com/pawnkit/pawnlint/releases/download/v1.1.11/${{ matrix.pawnlint-asset }}
           sha256: ${{ matrix.pawnlint-sha256 }}
       - run: pawnlint --version
       - run: go test ./...
@@ -43,7 +43,7 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
           repository: pawnkit/pawnkit-spec
-          ref: v0.1.27
+          ref: v0.1.34
           path: .test/pawnkit-spec
           persist-credentials: false
       - if: ${{ runner.os == 'Linux' }}
