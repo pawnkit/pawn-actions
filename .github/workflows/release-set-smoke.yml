@@ -135,26 +135,26 @@ jobs:
       - uses: ./.pawnkit/actions/setup-tool
         with:
           binary: pawnfmt
-          version: 1.3.6
+          version: v1.3.6
           download-url: https://github.com/pawnkit/pawnfmt/releases/download/v1.3.6/pawnfmt_1.3.6_${{ matrix.archive-target }}
           sha256: ${{ matrix.pawnfmt-sha256 }}
       - uses: ./.pawnkit/actions/setup-tool
         with:
           binary: pawnlint
-          version: 1.1.11
+          version: v1.1.11
           download-url: https://github.com/pawnkit/pawnlint/releases/download/v1.1.11/pawnlint_1.1.11_${{ matrix.archive-target }}
           sha256: ${{ matrix.pawnlint-sha256 }}
       - uses: ./.pawnkit/actions/setup-tool
         with:
           binary: pawnlsp
-          version: 0.26.11
+          version: v0.26.11
           download-url: https://github.com/pawnkit/pawnlsp/releases/download/v0.26.11/pawnlsp_0.26.11_${{ matrix.archive-target }}
           sha256: ${{ matrix.pawnlsp-sha256 }}
       - id: pawntest-install
         uses: ./.pawnkit/actions/setup-tool
         with:
           binary: pawntest
-          version: 1.2.2
+          version: v1.2.2
           download-url: https://github.com/pawnkit/pawntest/releases/download/v1.2.2/pawntest_1.2.2_${{ matrix.archive-target }}
           sha256: ${{ matrix.pawntest-sha256 }}
       - name: Check installed tools
