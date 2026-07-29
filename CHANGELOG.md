@@ -2,6 +2,12 @@
 
 Notable changes are recorded here.
 
+## 1.6.8 - 2026-07-29
+
+### Fixed
+
+- Use the formatted golden-project release in the integration matrix.
+
 ## 1.6.7 - 2026-07-29
 
 ### Fixed
