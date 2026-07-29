@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.9 - 2026-07-29
+
+- Test pawnlint v1.7.39 and pawnlsp v0.33.67 across supported platforms.
+
 ## 1.8.8 - 2026-07-29
 
 - Verify the corrected pawnkit-spec v0.1.48 release set.
