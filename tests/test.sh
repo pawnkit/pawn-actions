@@ -186,6 +186,23 @@ if "$root/build/run.sh" >/dev/null 2>&1; then
   exit 1
 fi
 
+go build -o "$temporary/backend-fixture" "$root/tests/backendfixture"
+"$temporary/backend-fixture" capabilities --output json > "$temporary/backend-capabilities.json"
+grep -q '"operations":\["run"\]' "$temporary/backend-capabilities.json"
+printf 'amx fixture\n' > "$temporary/project.amx"
+cat > "$temporary/backend-request.json" <<JSON
+{
+  "kind": "request",
+  "schemaVersion": 2,
+  "operation": "run",
+  "output": "$temporary/project.amx"
+}
+JSON
+"$temporary/backend-fixture" execute \
+  --input "$temporary/backend-request.json" \
+  --output "$temporary/backend-result.json"
+grep -q '"status":"passed"' "$temporary/backend-result.json"
+
 while IFS= read -r use; do
   target="${use#*uses: }"
   if [[ "$target" == pawnkit/* ]]; then continue; fi

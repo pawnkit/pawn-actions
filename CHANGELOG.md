@@ -2,6 +2,12 @@
 
 Notable changes are recorded here.
 
+## 1.6.5 - 2026-07-29
+
+### Added
+
+- Added the run-backend fixture for toolchain integration tests.
+
 ## 1.6.4 - 2026-07-26
 
 ### Fixed
