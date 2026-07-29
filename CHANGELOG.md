@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.6 - 2026-07-29
+
+- Promote the tested pawnkit-spec v0.1.47 release set.
+
 ## 1.8.5 - 2026-07-29
 
 - Test the v3-compatible pawn v1.5.1 toolchain candidate.
