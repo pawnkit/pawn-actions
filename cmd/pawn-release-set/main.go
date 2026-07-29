@@ -120,23 +120,31 @@ func run(path string, modules []string, options runOptions) error {
 type ghVerifier struct{}
 
 func (ghVerifier) Verify(ctx context.Context, path string, component releaseset.Component, artifact releaseset.Artifact) error {
-	workflow, err := releaseset.SignerWorkflow(*artifact.Provenance)
+	arguments, err := ghVerificationArguments(path, component, artifact)
 	if err != nil {
 		return err
 	}
-	command := exec.CommandContext(ctx, "gh", "attestation", "verify", path, //nolint:gosec // Arguments come from a validated release set.
-		"--repo", component.Repository,
-		"--signer-repo", component.Repository,
-		"--signer-workflow", workflow,
-		"--source-ref", "refs/tags/"+component.Version,
-		"--source-digest", component.Commit,
-		"--deny-self-hosted-runners",
-	)
+	command := exec.CommandContext(ctx, "gh", arguments...) //nolint:gosec // Arguments come from a validated release set.
 	output, err := command.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("gh attestation verify: %w: %s", err, strings.TrimSpace(string(output)))
 	}
 	return nil
+}
+
+func ghVerificationArguments(path string, component releaseset.Component, artifact releaseset.Artifact) ([]string, error) {
+	workflow, err := releaseset.SignerWorkflow(*artifact.Provenance)
+	if err != nil {
+		return nil, err
+	}
+	return []string{
+		"attestation", "verify", path,
+		"--repo", component.Repository,
+		"--signer-workflow", workflow,
+		"--source-ref", "refs/tags/" + component.Version,
+		"--source-digest", component.Commit,
+		"--deny-self-hosted-runners",
+	}, nil
 }
 
 func selectArtifact(set releaseset.Set, options runOptions) error {
