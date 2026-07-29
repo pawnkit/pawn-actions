@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.10 - 2026-07-29
+
+- Promote the signed pawnkit-spec v0.1.51 toolchain.
+
 ## 1.8.9 - 2026-07-29
 
 - Test pawnlint v1.7.39 and pawnlsp v0.33.67 across supported platforms.
