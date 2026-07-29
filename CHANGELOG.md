@@ -2,6 +2,12 @@
 
 Notable changes are recorded here.
 
+## 1.6.9 - 2026-07-29
+
+### Fixed
+
+- Build the run fixture from the checked-out Actions module.
+
 ## 1.6.8 - 2026-07-29
 
 ### Fixed

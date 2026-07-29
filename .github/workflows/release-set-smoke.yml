@@ -271,7 +271,8 @@ jobs:
           echo "${{ github.workspace }}/pawnc-3.10.10-linux/bin" >> "$GITHUB_PATH"
       - name: Build run backend fixture
         shell: bash
-        run: go build -o "${{ runner.temp }}/pawn-run-fixture" ./.pawnkit/actions/tests/backendfixture
+        working-directory: .pawnkit/actions
+        run: go build -o "${{ runner.temp }}/pawn-run-fixture" ./tests/backendfixture
       - uses: ./.pawnkit/actions/build
         with:
           project: .pawnkit/corpus/projects/minimal-samp-gamemode
