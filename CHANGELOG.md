@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Exercise CLI toolchain reporting in the compatibility smoke matrix.
+- Keep release-set v2 immutable and validate supply-chain records in v3.
 
 ## 1.7.0 - 2026-07-29
 

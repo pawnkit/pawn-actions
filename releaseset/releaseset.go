@@ -151,7 +151,7 @@ func ensureEOF(decoder *json.Decoder) error {
 }
 
 func (set Set) Validate() error {
-	if set.SchemaVersion != 1 && set.SchemaVersion != 2 {
+	if set.SchemaVersion != 1 && set.SchemaVersion != 2 && set.SchemaVersion != 3 {
 		return fmt.Errorf("release set: unsupported schema version %d", set.SchemaVersion)
 	}
 	if !idPattern.MatchString(set.ID) {
@@ -178,7 +178,7 @@ func (set Set) Validate() error {
 	if err := validateComponents(set.SchemaVersion, set.Components, set.Targets); err != nil {
 		return err
 	}
-	if set.SchemaVersion == 2 {
+	if set.SchemaVersion >= 2 {
 		if err := validateModuleGraph(set.ModuleGraph); err != nil {
 			return err
 		}
@@ -363,8 +363,8 @@ func validateArtifact(schemaVersion int, component Component, artifact Artifact)
 	if !strings.HasPrefix(parsed.EscapedPath(), wantPrefix) {
 		return fmt.Errorf("release set: component %q artifact URL does not match its release", component.Name)
 	}
-	if schemaVersion == 1 && (artifact.SBOM != nil || artifact.Provenance != nil) {
-		return fmt.Errorf("release set: component %q supply-chain evidence requires schema version 2", component.Name)
+	if schemaVersion < 3 && (artifact.SBOM != nil || artifact.Provenance != nil) {
+		return fmt.Errorf("release set: component %q supply-chain evidence requires schema version 3", component.Name)
 	}
 	if artifact.SBOM != nil {
 		if err := validateEvidenceAsset(component, *artifact.SBOM); err != nil {

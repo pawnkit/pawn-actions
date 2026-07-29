@@ -134,7 +134,7 @@ func TestValidateVersionTwoSupplyChainEvidence(t *testing.T) {
 	t.Parallel()
 
 	set := validSet([]byte("archive"))
-	set.SchemaVersion = 2
+	set.SchemaVersion = 3
 	set.ModuleGraph = []Module{{
 		Repository: "pawnkit/pawnkit-cli",
 		Module:     "github.com/pawnkit/pawnkit-cli",

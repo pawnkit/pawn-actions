@@ -57,7 +57,7 @@ when only the archives need checking.
 Repeat `-go-mod` to validate the organisation graph. The command rejects
 reversed edges, cycles, local replacements, pseudo-versions, duplicate
 entries, and artifacts for untested targets. Release-set v2 stores that graph.
-It can also record an archive's SBOM and GitHub build attestation. Validation
+Release-set v3 can also record an archive's SBOM and GitHub build attestation. Validation
 checks the SBOM asset and binds the attestation record to the archive digest.
 
 Repositories can call the shared validation workflow:
