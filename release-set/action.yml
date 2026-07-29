@@ -38,6 +38,7 @@ runs:
     - id: validate
       shell: bash
       env:
+        GH_TOKEN: ${{ github.token }}
         PAWN_RELEASE_SET: ${{ inputs.release-set }}
         PAWN_VERIFY_REMOTE: ${{ inputs.verify-remote }}
         PAWN_VERIFY_ATTESTATIONS: ${{ inputs.verify-attestations }}

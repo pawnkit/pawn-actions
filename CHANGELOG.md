@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.1 - 2026-07-29
+
+- Pass the workflow token to GitHub's attestation verifier.
+
 ## 1.8.0 - 2026-07-29
 
 - Cryptographically verify v3 build attestations against the recorded signer,
