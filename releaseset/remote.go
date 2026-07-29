@@ -9,6 +9,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 )
 
@@ -178,6 +179,11 @@ func newRequest(ctx context.Context, endpoint string) (*http.Request, error) {
 	}
 	request.Header.Set("Accept", "application/vnd.github+json")
 	request.Header.Set("User-Agent", "pawn-actions-release-set")
+	if request.URL.Host == "api.github.com" {
+		if token := os.Getenv("GH_TOKEN"); token != "" {
+			request.Header.Set("Authorization", "Bearer "+token)
+		}
+	}
 	return request, nil
 }
 

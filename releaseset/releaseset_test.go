@@ -388,6 +388,26 @@ func TestVerifyRemoteRejectsFailedWorkflow(t *testing.T) {
 	}
 }
 
+func TestNewRequestAuthenticatesOnlyGitHubAPI(t *testing.T) {
+	t.Setenv("GH_TOKEN", "test-token")
+
+	request, err := newRequest(t.Context(), "https://api.github.com/repos/pawnkit/pawn-actions")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := request.Header.Get("Authorization"); got != "Bearer test-token" {
+		t.Fatalf("Authorization = %q", got)
+	}
+
+	request, err = newRequest(t.Context(), "https://github.com/pawnkit/pawn-actions/releases/download/v1/tool.tar.gz")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := request.Header.Get("Authorization"); got != "" {
+		t.Fatalf("release Authorization = %q", got)
+	}
+}
+
 func TestValidateGoMod(t *testing.T) {
 	t.Parallel()
 

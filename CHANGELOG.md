@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.7 - 2026-07-29
+
+- Authenticate GitHub API checks without sending credentials to artifact hosts.
+
 ## 1.8.6 - 2026-07-29
 
 - Promote the tested pawnkit-spec v0.1.47 release set.
