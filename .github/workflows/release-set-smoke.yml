@@ -15,7 +15,7 @@ on:
       spec-ref:
         description: Exact pawnkit-spec tag or commit
         required: true
-        default: v0.1.46
+        default: 7fcbc9f9e2c47b379082472cc5bca57e3a579398
       set-path:
         description: Path below pawnkit-spec
         required: true
@@ -42,7 +42,7 @@ permissions:
   attestations: read
   contents: read
 env:
-  SPEC_REF: ${{ inputs.spec-ref || 'v0.1.46' }}
+  SPEC_REF: ${{ inputs.spec-ref || '7fcbc9f9e2c47b379082472cc5bca57e3a579398' }}
   SET_PATH: ${{ inputs.set-path || 'release-sets/toolchain-signed-2026-07-29.json' }}
   CORPUS_REF: ${{ inputs.corpus-ref || 'v0.1.17' }}
 jobs:

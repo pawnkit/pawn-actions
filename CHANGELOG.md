@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.5 - 2026-07-29
+
+- Test the v3-compatible pawn v1.5.1 toolchain candidate.
+
 ## 1.8.4 - 2026-07-29
 
 - Use the exact signer workflow without passing a conflicting signer option.
