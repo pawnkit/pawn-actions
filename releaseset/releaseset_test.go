@@ -130,6 +130,38 @@ func TestValidateVersionTwoModuleGraph(t *testing.T) {
 	}
 }
 
+func TestValidateVersionTwoSupplyChainEvidence(t *testing.T) {
+	t.Parallel()
+
+	set := validSet([]byte("archive"))
+	set.SchemaVersion = 2
+	set.ModuleGraph = []Module{{
+		Repository: "pawnkit/pawnkit-cli",
+		Module:     "github.com/pawnkit/pawnkit-cli",
+		Version:    "v1.1.3",
+		Commit:     strings.Repeat("2", 40),
+	}}
+	artifact := &set.Components[0].Artifacts[0]
+	artifact.SBOM = &EvidenceAsset{
+		URL:      "https://github.com/pawnkit/pawnkit-cli/releases/download/v1.1.3/pawn-linux-amd64.tar.gz.sbom.json",
+		Size:     10,
+		Checksum: "sha256:" + strings.Repeat("4", 64),
+	}
+	artifact.Provenance = &Provenance{
+		Repository: "pawnkit/pawnkit-cli",
+		Workflow:   "https://github.com/pawnkit/pawnkit-cli/.github/workflows/release.yml@refs/tags/v1.1.3",
+		Subject:    artifact.Checksum,
+	}
+	if err := set.Validate(); err != nil {
+		t.Fatalf("Validate: %v", err)
+	}
+
+	artifact.Provenance.Subject = "sha256:" + strings.Repeat("5", 64)
+	if err := set.Validate(); err == nil || !strings.Contains(err.Error(), "mismatched provenance") {
+		t.Fatalf("Validate error = %v", err)
+	}
+}
+
 func TestVerifyArtifacts(t *testing.T) {
 	t.Parallel()
 

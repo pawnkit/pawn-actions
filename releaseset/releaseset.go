@@ -63,10 +63,24 @@ type Component struct {
 }
 
 type Artifact struct {
-	Target   string `json:"target"`
+	Target     string         `json:"target"`
+	URL        string         `json:"url"`
+	Size       int64          `json:"size"`
+	Checksum   string         `json:"checksum"`
+	SBOM       *EvidenceAsset `json:"sbom,omitempty"`
+	Provenance *Provenance    `json:"provenance,omitempty"`
+}
+
+type EvidenceAsset struct {
 	URL      string `json:"url"`
 	Size     int64  `json:"size"`
 	Checksum string `json:"checksum"`
+}
+
+type Provenance struct {
+	Repository string `json:"repository"`
+	Workflow   string `json:"workflow"`
+	Subject    string `json:"subject"`
 }
 
 type Module struct {
@@ -161,7 +175,7 @@ func (set Set) Validate() error {
 	if len(set.Components) == 0 || len(set.Components) > 128 {
 		return errors.New("release set: components must contain 1 to 128 entries")
 	}
-	if err := validateComponents(set.Components, set.Targets); err != nil {
+	if err := validateComponents(set.SchemaVersion, set.Components, set.Targets); err != nil {
 		return err
 	}
 	if set.SchemaVersion == 2 {
@@ -301,7 +315,7 @@ func validateUnique(label string, values []string, valid func(string) bool) erro
 	return nil
 }
 
-func validateComponents(components []Component, targets []string) error {
+func validateComponents(schemaVersion int, components []Component, targets []string) error {
 	seen := make(map[string]struct{}, len(components))
 	for _, component := range components {
 		if !idPattern.MatchString(component.Name) ||
@@ -326,7 +340,7 @@ func validateComponents(components []Component, targets []string) error {
 				return fmt.Errorf("release set: component %q repeats target %q", component.Name, artifact.Target)
 			}
 			artifactTargets[artifact.Target] = struct{}{}
-			if err := validateArtifact(component, artifact); err != nil {
+			if err := validateArtifact(schemaVersion, component, artifact); err != nil {
 				return err
 			}
 		}
@@ -334,7 +348,7 @@ func validateComponents(components []Component, targets []string) error {
 	return nil
 }
 
-func validateArtifact(component Component, artifact Artifact) error {
+func validateArtifact(schemaVersion int, component Component, artifact Artifact) error {
 	if artifact.Size < 1 || artifact.Size > maxArtifactSize {
 		return fmt.Errorf("release set: component %q has invalid artifact size", component.Name)
 	}
@@ -348,6 +362,44 @@ func validateArtifact(component Component, artifact Artifact) error {
 	wantPrefix := "/" + component.Repository + "/releases/download/" + component.Version + "/"
 	if !strings.HasPrefix(parsed.EscapedPath(), wantPrefix) {
 		return fmt.Errorf("release set: component %q artifact URL does not match its release", component.Name)
+	}
+	if schemaVersion == 1 && (artifact.SBOM != nil || artifact.Provenance != nil) {
+		return fmt.Errorf("release set: component %q supply-chain evidence requires schema version 2", component.Name)
+	}
+	if artifact.SBOM != nil {
+		if err := validateEvidenceAsset(component, *artifact.SBOM); err != nil {
+			return err
+		}
+	}
+	if artifact.Provenance != nil {
+		if artifact.Provenance.Repository != component.Repository ||
+			artifact.Provenance.Subject != artifact.Checksum {
+			return fmt.Errorf("release set: component %q has mismatched provenance", component.Name)
+		}
+		workflowPrefix := "https://github.com/" + component.Repository + "/.github/workflows/"
+		workflowSuffix := "@refs/tags/" + component.Version
+		if !strings.HasPrefix(artifact.Provenance.Workflow, workflowPrefix) ||
+			!strings.HasSuffix(artifact.Provenance.Workflow, workflowSuffix) {
+			return fmt.Errorf("release set: component %q has invalid provenance workflow", component.Name)
+		}
+	}
+	return nil
+}
+
+func validateEvidenceAsset(component Component, asset EvidenceAsset) error {
+	if asset.Size < 1 || asset.Size > maxArtifactSize {
+		return fmt.Errorf("release set: component %q has invalid SBOM size", component.Name)
+	}
+	if _, err := checksumBytes(asset.Checksum); err != nil {
+		return fmt.Errorf("release set: component %q SBOM: %w", component.Name, err)
+	}
+	parsed, err := url.Parse(asset.URL)
+	if err != nil || parsed.Scheme != "https" || parsed.Host != "github.com" {
+		return fmt.Errorf("release set: component %q has invalid SBOM URL", component.Name)
+	}
+	wantPrefix := "/" + component.Repository + "/releases/download/" + component.Version + "/"
+	if !strings.HasPrefix(parsed.EscapedPath(), wantPrefix) {
+		return fmt.Errorf("release set: component %q SBOM URL does not match its release", component.Name)
 	}
 	return nil
 }

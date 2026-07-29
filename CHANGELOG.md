@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.0 - 2026-07-29
+
+- Validate release-set v2 SBOM and build-attestation records.
+- Verify referenced SBOM release assets with their recorded checksums.
+
 Notable changes are recorded here.
 
 ## 1.6.13 - 2026-07-29
