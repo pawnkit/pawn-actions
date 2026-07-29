@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.7.1 - 2026-07-29
 
 - Exercise CLI toolchain reporting in the compatibility smoke matrix.
 - Keep release-set v2 immutable and validate supply-chain records in v3.
