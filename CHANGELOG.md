@@ -2,6 +2,13 @@
 
 Notable changes are recorded here.
 
+## 1.6.6 - 2026-07-29
+
+### Changed
+
+- Run the July 29 toolchain candidate across the golden projects.
+- Check project tests and the run protocol in the Linux integration job.
+
 ## 1.6.5 - 2026-07-29
 
 ### Added

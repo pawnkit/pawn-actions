@@ -15,15 +15,15 @@ on:
       spec-ref:
         description: Exact pawnkit-spec tag or commit
         required: true
-        default: v0.1.34
+        default: v0.1.37
       set-path:
         description: Path below pawnkit-spec
         required: true
-        default: release-sets/toolchain-preview-2026-07-26.json
+        default: release-sets/current-toolchain-candidate-2026-07-29.json
       corpus-ref:
         description: Exact pawn-corpus tag or commit
         required: true
-        default: v0.1.11
+        default: v0.1.16
   workflow_call:
     inputs:
       spec-ref:
@@ -41,9 +41,9 @@ on:
 permissions:
   contents: read
 env:
-  SPEC_REF: ${{ inputs.spec-ref || 'v0.1.34' }}
-  SET_PATH: ${{ inputs.set-path || 'release-sets/toolchain-preview-2026-07-26.json' }}
-  CORPUS_REF: ${{ inputs.corpus-ref || 'v0.1.11' }}
+  SPEC_REF: ${{ inputs.spec-ref || 'v0.1.37' }}
+  SET_PATH: ${{ inputs.set-path || 'release-sets/current-toolchain-candidate-2026-07-29.json' }}
+  CORPUS_REF: ${{ inputs.corpus-ref || 'v0.1.16' }}
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -206,6 +206,12 @@ jobs:
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
+          repository: pawnkit/pawnkit-spec
+          ref: ${{ env.SPEC_REF }}
+          path: .pawnkit/spec
+          persist-credentials: false
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
           repository: pawnkit/pawn-actions
           ref: ${{ github.workflow_sha }}
           path: .pawnkit/actions
@@ -216,11 +222,36 @@ jobs:
           ref: ${{ env.CORPUS_REF }}
           path: .pawnkit/corpus
           persist-credentials: false
-      - uses: ./.pawnkit/actions/setup
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
-          version: 1.3.1
-          download-url: https://github.com/pawnkit/pawnkit-cli/releases/download/v1.3.1/pawn-linux-amd64.tar.gz
-          sha256: 466e99ad7e9f743928e5dac2b9c779255b5adbd414cde366ff0e7a6159a63365
+          go-version-file: .pawnkit/actions/go.mod
+          cache-dependency-path: .pawnkit/actions/go.sum
+      - id: pawn
+        uses: ./.pawnkit/actions/release-set
+        with:
+          release-set: .pawnkit/spec/${{ env.SET_PATH }}
+          verify-remote: 'false'
+          component: pawn
+          target: linux-amd64
+      - uses: ./.pawnkit/actions/setup-tool
+        with:
+          binary: pawn
+          version: ${{ steps.pawn.outputs.version }}
+          download-url: ${{ steps.pawn.outputs.url }}
+          sha256: ${{ steps.pawn.outputs.sha256 }}
+      - id: pawntest
+        uses: ./.pawnkit/actions/release-set
+        with:
+          release-set: .pawnkit/spec/${{ env.SET_PATH }}
+          verify-remote: 'false'
+          component: pawntest
+          target: linux-amd64
+      - uses: ./.pawnkit/actions/setup-tool
+        with:
+          binary: pawntest
+          version: ${{ steps.pawntest.outputs.version }}
+          download-url: ${{ steps.pawntest.outputs.url }}
+          sha256: ${{ steps.pawntest.outputs.sha256 }}
       - name: Install 32-bit compiler runtime
         shell: bash
         run: |
@@ -232,6 +263,10 @@ jobs:
           wget -q https://github.com/pawn-lang/compiler/releases/download/v3.10.10/pawnc-3.10.10-linux.tar.gz
           echo "9bbb1df6e933318fce1fa61951e4196b70613c637a5a1d4c96937e147c18468d  pawnc-3.10.10-linux.tar.gz" | sha256sum -c -
           tar -xzf pawnc-3.10.10-linux.tar.gz
+          echo "${{ github.workspace }}/pawnc-3.10.10-linux/bin" >> "$GITHUB_PATH"
+      - name: Build run backend fixture
+        shell: bash
+        run: go build -o "${{ runner.temp }}/pawn-run-fixture" ./.pawnkit/actions/tests/backendfixture
       - uses: ./.pawnkit/actions/build
         with:
           project: .pawnkit/corpus/projects/minimal-samp-gamemode
@@ -246,6 +281,19 @@ jobs:
           artifact: ${{ runner.temp }}/filterscript-with-includes.amx
           output: json
           result-file: ${{ runner.temp }}/filterscript-with-includes.json
+      - name: Check, test, and run golden projects
+        shell: bash
+        run: |
+          for project in minimal-samp-gamemode filterscript-with-includes; do
+            path=".pawnkit/corpus/projects/$project"
+            artifact="${{ runner.temp }}/$project.amx"
+            pawn doctor --project "$path"
+            pawn check --project "$path" --test-tool pawntest
+            pawn run \
+              --project "$path" \
+              --backend "${{ runner.temp }}/pawn-run-fixture" \
+              --artifact "$artifact"
+          done
       - name: Check diagnostic contract
         shell: bash
         run: |
