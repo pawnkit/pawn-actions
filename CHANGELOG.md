@@ -2,6 +2,12 @@
 
 Notable changes are recorded here.
 
+## 1.6.12 - 2026-07-29
+
+### Changed
+
+- Test the hardened formatter and linter release candidate.
+
 ## 1.6.11 - 2026-07-29
 
 ### Fixed
