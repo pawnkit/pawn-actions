@@ -2,6 +2,12 @@
 
 Notable changes are recorded here.
 
+## 1.6.10 - 2026-07-29
+
+### Changed
+
+- Promoted the tested July 29 release set to the default toolchain.
+
 ## 1.6.9 - 2026-07-29
 
 ### Fixed
