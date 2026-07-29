@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"os/exec"
 	"strconv"
 	"strings"
 	"time"
@@ -29,6 +30,7 @@ func main() {
 	var modules paths
 	verify := flag.Bool("verify-artifacts", false, "download and verify release artifacts")
 	verifyRemote := flag.Bool("verify-remote", false, "verify tags, schemas, workflow evidence, and artifacts")
+	verifyAttestations := flag.Bool("verify-attestations", false, "cryptographically verify v3 artifact attestations")
 	component := flag.String("component", "", "select an artifact from this component")
 	target := flag.String("target", "", "select an artifact for this target")
 	githubOutput := flag.String("github-output", "", "append the selected artifact to a GitHub output file")
@@ -40,11 +42,12 @@ func main() {
 		os.Exit(2)
 	}
 	options := runOptions{
-		verifyArtifacts: *verify,
-		verifyRemote:    *verifyRemote,
-		component:       *component,
-		target:          *target,
-		githubOutput:    *githubOutput,
+		verifyArtifacts:    *verify,
+		verifyRemote:       *verifyRemote,
+		verifyAttestations: *verifyAttestations,
+		component:          *component,
+		target:             *target,
+		githubOutput:       *githubOutput,
 	}
 	if err := run(flag.Arg(0), modules, options); err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -53,11 +56,12 @@ func main() {
 }
 
 type runOptions struct {
-	verifyArtifacts bool
-	verifyRemote    bool
-	component       string
-	target          string
-	githubOutput    string
+	verifyArtifacts    bool
+	verifyRemote       bool
+	verifyAttestations bool
+	component          string
+	target             string
+	githubOutput       string
 }
 
 func run(path string, modules []string, options runOptions) error {
@@ -99,11 +103,39 @@ func run(path string, modules []string, options runOptions) error {
 			return err
 		}
 	}
+	if options.verifyAttestations {
+		client := &http.Client{Timeout: 5 * time.Minute}
+		if err := releaseset.VerifyAttestations(context.Background(), client, ghVerifier{}, set); err != nil {
+			return err
+		}
+	}
 	if err := selectArtifact(set, options); err != nil {
 		return err
 	}
 
 	fmt.Printf("ok: %s (%d components)\n", set.ID, len(set.Components))
+	return nil
+}
+
+type ghVerifier struct{}
+
+func (ghVerifier) Verify(ctx context.Context, path string, component releaseset.Component, artifact releaseset.Artifact) error {
+	workflow, err := releaseset.SignerWorkflow(*artifact.Provenance)
+	if err != nil {
+		return err
+	}
+	command := exec.CommandContext(ctx, "gh", "attestation", "verify", path, //nolint:gosec // Arguments come from a validated release set.
+		"--repo", component.Repository,
+		"--signer-repo", component.Repository,
+		"--signer-workflow", workflow,
+		"--source-ref", "refs/tags/"+component.Version,
+		"--source-digest", component.Commit,
+		"--deny-self-hosted-runners",
+	)
+	output, err := command.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("gh attestation verify: %w: %s", err, strings.TrimSpace(string(output)))
+	}
 	return nil
 }
 

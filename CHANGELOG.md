@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.8.0 - 2026-07-29
+
+- Cryptographically verify v3 build attestations against the recorded signer,
+  tag, commit, and artifact.
+- Require SBOM and provenance records for every v3 artifact.
+
 ## 1.7.1 - 2026-07-29
 
 - Exercise CLI toolchain reporting in the compatibility smoke matrix.

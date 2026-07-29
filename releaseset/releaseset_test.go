@@ -2,11 +2,14 @@ package releaseset
 
 import (
 	"bytes"
+	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strings"
 	"testing"
 )
@@ -130,7 +133,7 @@ func TestValidateVersionTwoModuleGraph(t *testing.T) {
 	}
 }
 
-func TestValidateVersionTwoSupplyChainEvidence(t *testing.T) {
+func TestValidateVersionThreeSupplyChainEvidence(t *testing.T) {
 	t.Parallel()
 
 	set := validSet([]byte("archive"))
@@ -160,6 +163,91 @@ func TestValidateVersionTwoSupplyChainEvidence(t *testing.T) {
 	if err := set.Validate(); err == nil || !strings.Contains(err.Error(), "mismatched provenance") {
 		t.Fatalf("Validate error = %v", err)
 	}
+}
+
+func TestValidateVersionThreeRequiresSupplyChainEvidence(t *testing.T) {
+	t.Parallel()
+
+	set := validSet([]byte("archive"))
+	set.SchemaVersion = 3
+	set.ModuleGraph = []Module{{
+		Repository: "pawnkit/pawnkit-cli",
+		Module:     "github.com/pawnkit/pawnkit-cli",
+		Version:    "v1.1.3",
+		Commit:     strings.Repeat("2", 40),
+	}}
+	if err := set.Validate(); err == nil || !strings.Contains(err.Error(), "requires SBOM and provenance") {
+		t.Fatalf("Validate error = %v", err)
+	}
+}
+
+func TestSignerWorkflow(t *testing.T) {
+	t.Parallel()
+
+	got, err := SignerWorkflow(Provenance{
+		Workflow: "https://github.com/pawnkit/pawnkit-cli/.github/workflows/release.yml@refs/tags/v1.5.0",
+	})
+	if err != nil {
+		t.Fatalf("SignerWorkflow: %v", err)
+	}
+	const want = "pawnkit/pawnkit-cli/.github/workflows/release.yml"
+	if got != want {
+		t.Fatalf("SignerWorkflow = %q, want %q", got, want)
+	}
+}
+
+func TestVerifyAttestations(t *testing.T) {
+	t.Parallel()
+
+	content := []byte("archive")
+	set := validVersionThreeSet(content)
+	client := staticClient{response: response(http.StatusOK, content)}
+	verifier := &recordingVerifier{}
+	if err := VerifyAttestations(t.Context(), client, verifier, set); err != nil {
+		t.Fatalf("VerifyAttestations: %v", err)
+	}
+	if verifier.calls != 1 {
+		t.Fatalf("verifier calls = %d, want 1", verifier.calls)
+	}
+}
+
+func validVersionThreeSet(content []byte) Set {
+	set := validSet(content)
+	set.SchemaVersion = 3
+	set.ModuleGraph = []Module{{
+		Repository: "pawnkit/pawnkit-cli",
+		Module:     "github.com/pawnkit/pawnkit-cli",
+		Version:    "v1.1.3",
+		Commit:     strings.Repeat("2", 40),
+	}}
+	artifact := &set.Components[0].Artifacts[0]
+	artifact.SBOM = &EvidenceAsset{
+		URL:      "https://github.com/pawnkit/pawnkit-cli/releases/download/v1.1.3/pawn-linux-amd64.tar.gz.sbom.json",
+		Size:     int64(len(content)),
+		Checksum: artifact.Checksum,
+	}
+	artifact.Provenance = &Provenance{
+		Repository: "pawnkit/pawnkit-cli",
+		Workflow:   "https://github.com/pawnkit/pawnkit-cli/.github/workflows/release.yml@refs/tags/v1.1.3",
+		Subject:    artifact.Checksum,
+	}
+	return set
+}
+
+type recordingVerifier struct {
+	calls int
+}
+
+func (verifier *recordingVerifier) Verify(_ context.Context, path string, _ Component, _ Artifact) error {
+	content, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	if string(content) != "archive" {
+		return fmt.Errorf("artifact content = %q", content)
+	}
+	verifier.calls++
+	return nil
 }
 
 func TestVerifyArtifacts(t *testing.T) {

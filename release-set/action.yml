@@ -7,6 +7,9 @@ inputs:
   verify-remote:
     description: Check public tags, schemas, workflow evidence, and artifacts
     default: 'true'
+  verify-attestations:
+    description: Cryptographically verify v3 artifact attestations
+    default: 'false'
   component:
     description: Optional component artifact to select
     default: ''
@@ -37,6 +40,7 @@ runs:
       env:
         PAWN_RELEASE_SET: ${{ inputs.release-set }}
         PAWN_VERIFY_REMOTE: ${{ inputs.verify-remote }}
+        PAWN_VERIFY_ATTESTATIONS: ${{ inputs.verify-attestations }}
         PAWN_COMPONENT: ${{ inputs.component }}
         PAWN_TARGET: ${{ inputs.target }}
       run: |
@@ -48,6 +52,9 @@ runs:
         args=()
         if [ "$PAWN_VERIFY_REMOTE" = true ]; then
           args+=("-verify-remote")
+        fi
+        if [ "$PAWN_VERIFY_ATTESTATIONS" = true ]; then
+          args+=("-verify-attestations")
         fi
         if [ -n "$PAWN_COMPONENT$PAWN_TARGET" ]; then
           args+=("-component" "$PAWN_COMPONENT" "-target" "$PAWN_TARGET" "-github-output" "$GITHUB_OUTPUT")

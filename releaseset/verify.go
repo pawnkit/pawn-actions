@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 )
 
 type HTTPClient interface {
@@ -40,6 +41,10 @@ func verifyArtifact(ctx context.Context, client HTTPClient, component string, ar
 }
 
 func verifyAsset(ctx context.Context, client HTTPClient, component, url string, size int64, checksum string) error {
+	return downloadAsset(ctx, client, component, url, size, checksum, "")
+}
+
+func downloadAsset(ctx context.Context, client HTTPClient, component, url string, size int64, checksum, path string) error {
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return fmt.Errorf("release set: %s: create request: %w", component, err)
@@ -60,7 +65,19 @@ func verifyAsset(ctx context.Context, client HTTPClient, component, url string, 
 	}
 
 	hash := sha256.New()
-	actualSize, err := io.Copy(hash, io.LimitReader(response.Body, size+1))
+	writer := io.Writer(hash)
+	var file *os.File
+	if path != "" {
+		file, err = os.OpenFile(path, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0o600) //nolint:gosec // The caller creates this temporary path.
+		if err != nil {
+			return fmt.Errorf("release set: %s: create artifact: %w", component, err)
+		}
+		defer func() {
+			_ = file.Close()
+		}()
+		writer = io.MultiWriter(hash, file)
+	}
+	actualSize, err := io.Copy(writer, io.LimitReader(response.Body, size+1))
 	if err != nil {
 		return fmt.Errorf("release set: %s: read artifact: %w", component, err)
 	}

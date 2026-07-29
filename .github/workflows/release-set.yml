@@ -15,8 +15,14 @@ on:
         required: false
         default: true
         type: boolean
+      verify-attestations:
+        description: Cryptographically verify v3 artifact attestations
+        required: false
+        default: false
+        type: boolean
 permissions:
   contents: read
+  attestations: read
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -41,3 +47,4 @@ jobs:
         with:
           release-set: .pawnkit/spec/${{ inputs.set-path }}
           verify-remote: ${{ inputs.verify-remote }}
+          verify-attestations: ${{ inputs.verify-attestations }}

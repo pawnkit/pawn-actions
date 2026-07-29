@@ -366,6 +366,9 @@ func validateArtifact(schemaVersion int, component Component, artifact Artifact)
 	if schemaVersion < 3 && (artifact.SBOM != nil || artifact.Provenance != nil) {
 		return fmt.Errorf("release set: component %q supply-chain evidence requires schema version 3", component.Name)
 	}
+	if schemaVersion == 3 && (artifact.SBOM == nil || artifact.Provenance == nil) {
+		return fmt.Errorf("release set: component %q requires SBOM and provenance", component.Name)
+	}
 	if artifact.SBOM != nil {
 		if err := validateEvidenceAsset(component, *artifact.SBOM); err != nil {
 			return err
