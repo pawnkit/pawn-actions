@@ -2,6 +2,12 @@
 
 Notable changes are recorded here.
 
+## 1.6.13 - 2026-07-29
+
+### Changed
+
+- Promote the hardened July 29 toolchain set.
+
 ## 1.6.12 - 2026-07-29
 
 ### Changed
