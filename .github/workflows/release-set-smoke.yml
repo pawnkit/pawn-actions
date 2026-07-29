@@ -190,9 +190,14 @@ jobs:
           formatted="$(mktemp -d)"
           for project in minimal-samp-gamemode filterscript-with-includes; do
             path=".pawnkit/corpus/projects/$project"
+            if [[ "$project" == "minimal-samp-gamemode" ]]; then
+              entry="$path/gamemodes/main.pwn"
+            else
+              entry="$path/filterscripts/session.pwn"
+            fi
             pawn doctor --project "$path"
             pawn check --project "$path" --only project,lint
-            pawnlint "$path"
+            pawnlint "$entry"
             cp -R "$path" "$formatted/$project"
             pawnfmt --write "$formatted/$project"
             pawnfmt --check "$formatted/$project"

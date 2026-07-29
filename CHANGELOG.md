@@ -2,6 +2,12 @@
 
 Notable changes are recorded here.
 
+## 1.6.7 - 2026-07-29
+
+### Fixed
+
+- Compare standalone lint with the same manifest entry used by `pawn check`.
+
 ## 1.6.6 - 2026-07-29
 
 ### Changed
