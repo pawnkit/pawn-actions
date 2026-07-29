@@ -2,6 +2,12 @@
 
 Notable changes are recorded here.
 
+## 1.6.11 - 2026-07-29
+
+### Fixed
+
+- Pass the native temporary path to the run-protocol fixture on Windows.
+
 ## 1.6.10 - 2026-07-29
 
 ### Changed

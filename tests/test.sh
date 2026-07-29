@@ -190,12 +190,16 @@ go build -o "$temporary/backend-fixture" "$root/tests/backendfixture"
 "$temporary/backend-fixture" capabilities --output json > "$temporary/backend-capabilities.json"
 grep -q '"operations":\["run"\]' "$temporary/backend-capabilities.json"
 printf 'amx fixture\n' > "$temporary/project.amx"
+artifact="$temporary/project.amx"
+case "$(uname -s)" in
+  MINGW* | MSYS* | CYGWIN*) artifact="$(cygpath -m "$artifact")" ;;
+esac
 cat > "$temporary/backend-request.json" <<JSON
 {
   "kind": "request",
   "schemaVersion": 2,
   "operation": "run",
-  "output": "$temporary/project.amx"
+  "output": "$artifact"
 }
 JSON
 "$temporary/backend-fixture" execute \
