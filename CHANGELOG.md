@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.3 - 2026-07-29
+
+- Grant the release-set smoke job access to artifact attestations.
+
 ## 1.8.2 - 2026-07-29
 
 - Verify the signed five-tool set in the compatibility workflow.

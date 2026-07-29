@@ -39,6 +39,7 @@ on:
         required: true
         type: string
 permissions:
+  attestations: read
   contents: read
 env:
   SPEC_REF: ${{ inputs.spec-ref || 'v0.1.46' }}
