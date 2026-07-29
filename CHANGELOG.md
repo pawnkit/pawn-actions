@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Exercise CLI toolchain reporting in the compatibility smoke matrix.
+
 ## 1.7.0 - 2026-07-29
 
 - Validate release-set v2 SBOM and build-attestation records.
