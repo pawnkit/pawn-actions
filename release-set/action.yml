@@ -35,6 +35,10 @@ outputs:
 runs:
   using: composite
   steps:
+    - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+      with:
+        go-version-file: ${{ github.action_path }}/../go.mod
+        cache: false
     - id: validate
       shell: bash
       env:

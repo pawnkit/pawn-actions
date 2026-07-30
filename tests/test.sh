@@ -217,3 +217,10 @@ while IFS= read -r use; do
     exit 1
   fi
 done < <(grep -RhoE 'uses: [^[:space:]]+' "$root/.github" "$root/setup" "$root/check" "$root/build" "$root/fmt" "$root/lint" "$root/test" "$root/release-set")
+
+setup_line="$(grep -n 'uses: actions/setup-go@' "$root/release-set/action.yml" | cut -d: -f1)"
+validate_line="$(grep -n -- '- id: validate' "$root/release-set/action.yml" | cut -d: -f1)"
+if [[ -z "$setup_line" || -z "$validate_line" || "$setup_line" -ge "$validate_line" ]]; then
+  echo "release-set must install Go before validation" >&2
+  exit 1
+fi

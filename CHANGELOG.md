@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.11 - 2026-07-30
+
+- Install Go before validating a release set.
+
 ## 1.8.10 - 2026-07-29
 
 - Promote the signed pawnkit-spec v0.1.51 toolchain.
