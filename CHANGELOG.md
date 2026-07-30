@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.14 - 2026-07-30
+
+- Split compatibility checks so platform failures name the affected command.
+
 ## 1.8.13 - 2026-07-30
 
 - Keep Windows smoke-test copies on a native workspace path.

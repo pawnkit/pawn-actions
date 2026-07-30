@@ -187,16 +187,31 @@ jobs:
           pawntest --version
           pawn toolchain --release-set ".pawnkit/spec/${SET_PATH}"
           test -f "${{ steps.pawntest-install.outputs.path }}/include/pawntest.inc"
-      - name: Check golden projects
+      - name: Check project health
+        shell: bash
+        run: |
+          for project in minimal-samp-gamemode filterscript-with-includes; do
+            pawn doctor --project ".pawnkit/corpus/projects/$project"
+          done
+      - name: Check formatting
+        shell: bash
+        run: |
+          for project in minimal-samp-gamemode filterscript-with-includes; do
+            pawn fmt --project ".pawnkit/corpus/projects/$project" --check
+          done
+      - name: Check lint
+        shell: bash
+        run: |
+          for project in minimal-samp-gamemode filterscript-with-includes; do
+            pawn lint --project ".pawnkit/corpus/projects/$project"
+          done
+      - name: Check formatter writes
         shell: bash
         run: |
           formatted="$PWD/.pawnkit/formatted"
           mkdir -p "$formatted"
           for project in minimal-samp-gamemode filterscript-with-includes; do
             path=".pawnkit/corpus/projects/$project"
-            pawn doctor --project "$path"
-            pawn fmt --project "$path" --check
-            pawn lint --project "$path"
             cp -R "$path" "$formatted/$project"
             pawn fmt --project "$formatted/$project"
             pawn fmt --project "$formatted/$project" --check
