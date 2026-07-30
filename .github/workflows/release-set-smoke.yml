@@ -190,7 +190,8 @@ jobs:
       - name: Check golden projects
         shell: bash
         run: |
-          formatted="$(mktemp -d)"
+          formatted="$PWD/.pawnkit/formatted"
+          mkdir -p "$formatted"
           for project in minimal-samp-gamemode filterscript-with-includes; do
             path=".pawnkit/corpus/projects/$project"
             pawn doctor --project "$path"
@@ -292,8 +293,6 @@ jobs:
             path=".pawnkit/corpus/projects/$project"
             artifact="${{ runner.temp }}/$project.amx"
             pawn doctor --project "$path"
-            pawn fmt --project "$path" --check
-            pawn lint --project "$path"
             pawn test --project "$path"
             pawn run \
               --project "$path" \

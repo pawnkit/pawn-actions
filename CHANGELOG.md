@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.8.13 - 2026-07-30
+
+- Keep Windows smoke-test copies on a native workspace path.
+- Run focused commands only in jobs that install their tools.
+
 ## 1.8.12 - 2026-07-30
 
 - Test the July 30 candidate and its focused CLI workflow across supported
