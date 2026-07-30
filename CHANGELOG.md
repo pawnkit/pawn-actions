@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.15 - 2026-07-30
+
+- Use corpus fixtures with fixed LF line endings in the compatibility matrix.
+
 ## 1.8.14 - 2026-07-30
 
 - Split compatibility checks so platform failures name the affected command.
