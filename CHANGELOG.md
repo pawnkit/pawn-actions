@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.8.12 - 2026-07-30
+
+- Test the July 30 candidate and its focused CLI workflow across supported
+  platforms.
+
 ## 1.8.11 - 2026-07-30
 
 - Install Go before validating a release set.
