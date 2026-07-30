@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.16 - 2026-07-30
+
+- Promote the signed July 30 toolchain set.
+
 ## 1.8.15 - 2026-07-30
 
 - Use corpus fixtures with fixed LF line endings in the compatibility matrix.
