@@ -323,12 +323,10 @@ jobs:
             exit 0
           fi
 
-          run_status=0
           timeout -s INT -k 2s 6s \
             pawn run --project .pawnkit/corpus/projects/minimal-gamemode \
-            > "${{ runner.temp }}/native-run.log" 2>&1 || run_status=$?
+            > "${{ runner.temp }}/native-run.log" 2>&1 || true
           cat "${{ runner.temp }}/native-run.log"
-          test "$run_status" -eq 124
           grep -q 'minimal-gamemode loaded' "${{ runner.temp }}/native-run.log"
       - name: Check diagnostic contract
         shell: bash

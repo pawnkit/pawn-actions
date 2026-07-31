@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.8.19 - 2026-07-31
+
+- Check native runtime startup without depending on a platform-specific timeout
+  exit status.
+
 ## 1.8.18 - 2026-07-31
 
 - Test the native open.mp toolchain candidate.
