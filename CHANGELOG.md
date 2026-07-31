@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.23 - 2026-07-31
+
+- Install the 32-bit atomic runtime required by the open.mp Linux server.
+
 ## 1.8.22 - 2026-07-31
 
 - Report native runtime install and startup failures as workflow annotations.
