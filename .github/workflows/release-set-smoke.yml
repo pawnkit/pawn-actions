@@ -323,6 +323,7 @@ jobs:
             exit 0
           fi
 
+          pawn runtime install
           timeout -s INT -k 2s 6s \
             pawn run --project .pawnkit/corpus/projects/minimal-gamemode \
             > "${{ runner.temp }}/native-run.log" 2>&1 || true

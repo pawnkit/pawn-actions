@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.21 - 2026-07-31
+
+- Install the open.mp runtime before measuring native server startup.
+
 ## 1.8.20 - 2026-07-31
 
 - Include captured native runtime output in the compatibility run summary.
