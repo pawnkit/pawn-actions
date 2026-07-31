@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.18 - 2026-07-31
+
+- Test the native open.mp toolchain candidate.
+
 ## 1.8.17 - 2026-07-31
 
 - Exercise the native open.mp run path when the selected CLI supports it.
