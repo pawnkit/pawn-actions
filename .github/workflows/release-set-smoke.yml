@@ -323,7 +323,12 @@ jobs:
             exit 0
           fi
 
-          pawn runtime install
+          runtime_output="$(pawn runtime install 2>&1)" || {
+            runtime_output="${runtime_output//$'\n'/ }"
+            echo "::error title=Native runtime install::${runtime_output//'%'/'%25'}"
+            exit 1
+          }
+          echo "$runtime_output"
           timeout -s INT -k 2s 6s \
             pawn run --project .pawnkit/corpus/projects/minimal-gamemode \
             > "${{ runner.temp }}/native-run.log" 2>&1 || true
@@ -334,7 +339,11 @@ jobs:
             cat "${{ runner.temp }}/native-run.log"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
-          grep -q 'minimal-gamemode loaded' "${{ runner.temp }}/native-run.log"
+          if ! grep -q 'minimal-gamemode loaded' "${{ runner.temp }}/native-run.log"; then
+            native_output="$(tr '\n' ' ' < "${{ runner.temp }}/native-run.log")"
+            echo "::error title=Native runtime start::${native_output//'%'/'%25'}"
+            exit 1
+          fi
       - name: Check diagnostic contract
         shell: bash
         run: |

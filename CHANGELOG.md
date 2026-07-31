@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.22 - 2026-07-31
+
+- Report native runtime install and startup failures as workflow annotations.
+
 ## 1.8.21 - 2026-07-31
 
 - Install the open.mp runtime before measuring native server startup.
