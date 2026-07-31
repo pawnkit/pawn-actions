@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [[ -z "$PAWN_COMPILER" && -z "$PAWN_BACKEND" ]]; then
-  echo "compiler or backend is required" >&2
-  exit 2
-fi
 if [[ -n "$PAWN_COMPILER" && -n "$PAWN_BACKEND" ]]; then
   echo "compiler and backend cannot be used together" >&2
   exit 2

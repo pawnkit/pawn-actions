@@ -1,5 +1,5 @@
 name: Pawn Build
-description: Build a Pawn project with the selected compiler or backend
+description: Build a Pawn project with PawnKit
 inputs:
   project:
     description: Project directory
@@ -14,10 +14,10 @@ inputs:
     description: Named runtime
     default: ''
   compiler:
-    description: Pawn compiler path
+    description: Optional Pawn compiler path
     default: ''
   backend:
-    description: RFC 0012 backend executable
+    description: Optional RFC 0012 backend executable
     default: ''
   artifact:
     description: Optional output path

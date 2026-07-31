@@ -175,10 +175,22 @@ export PAWN_EXIT="0"
 
 export PAWN_COMPILER=""
 export PAWN_RESULT_FILE=""
-if "$root/build/run.sh" >/dev/null 2>&1; then
-  echo "build action accepted no compiler or backend" >&2
-  exit 1
-fi
+"$root/build/run.sh" >/dev/null
+diff -u - "$PAWN_ARGUMENTS" <<'EXPECTED'
+build
+--project
+project path
+--format
+json
+--profile
+openmp
+--build
+debug
+--runtime
+server
+--artifact
+build/server.amx
+EXPECTED
 export PAWN_COMPILER="pawncc"
 export PAWN_BACKEND="sampctl"
 if "$root/build/run.sh" >/dev/null 2>&1; then

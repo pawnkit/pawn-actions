@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.8.25 - 2026-07-31
+
+- Let `pawn build` select or acquire the compiler when the build action does
+  not receive an explicit compiler or backend.
+
 ## 1.8.24 - 2026-07-31
 
 - Use the tested July 31 toolchain release set by default.

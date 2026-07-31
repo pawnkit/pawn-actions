@@ -23,7 +23,13 @@ The `check`, `fmt`, and `lint` actions call `pawn check`; they do not maintain a
 second copy of its behavior. The `test` action also needs a PawnKit-compatible
 test backend such as `pawntest` already available on `PATH`.
 
-Build with an explicit compiler:
+Build with PawnKit's project compiler selection:
+
+```yaml
+- uses: pawnkit/pawn-actions/build@v1
+```
+
+To select a compiler explicitly:
 
 ```yaml
 - uses: pawnkit/pawn-actions/build@v1
@@ -33,8 +39,9 @@ Build with an explicit compiler:
     artifact: build/server.amx
 ```
 
-Set `backend` instead of `compiler` to use an RFC 0012 build backend. The action
-passes profile, build, runtime, and output choices to `pawn build`.
+Set `backend` instead of `compiler` to use an RFC 0012 build backend. Without
+either input, `pawn build` selects or acquires the project compiler. The action
+passes profile, build, runtime, and output choices through unchanged.
 
 Reusable workflows are available under `.github/workflows`. They cover the
 general check pipeline, SARIF upload, corpus conformance, Go library CI, and Go
