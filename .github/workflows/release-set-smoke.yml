@@ -23,7 +23,7 @@ on:
       corpus-ref:
         description: Exact pawn-corpus tag or commit
         required: true
-        default: v0.1.18
+        default: v0.1.19
   workflow_call:
     inputs:
       spec-ref:
@@ -44,7 +44,7 @@ permissions:
 env:
   SPEC_REF: ${{ inputs.spec-ref || 'v0.1.53' }}
   SET_PATH: ${{ inputs.set-path || 'release-sets/toolchain-signed-2026-07-30.json' }}
-  CORPUS_REF: ${{ inputs.corpus-ref || 'v0.1.18' }}
+  CORPUS_REF: ${{ inputs.corpus-ref || 'v0.1.19' }}
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -314,6 +314,22 @@ jobs:
               --backend "${{ runner.temp }}/pawn-run-fixture" \
               --artifact "$artifact"
           done
+      - name: Start native open.mp runtime
+        shell: bash
+        run: |
+          runtime_help="$(pawn runtime install --help 2>&1 || true)"
+          if ! grep -q 'Usage of runtime install' <<< "$runtime_help"; then
+            echo "Selected pawn release does not support native runtimes; skipping."
+            exit 0
+          fi
+
+          run_status=0
+          timeout -s INT -k 2s 6s \
+            pawn run --project .pawnkit/corpus/projects/minimal-gamemode \
+            > "${{ runner.temp }}/native-run.log" 2>&1 || run_status=$?
+          cat "${{ runner.temp }}/native-run.log"
+          test "$run_status" -eq 124
+          grep -q 'minimal-gamemode loaded' "${{ runner.temp }}/native-run.log"
       - name: Check diagnostic contract
         shell: bash
         run: |

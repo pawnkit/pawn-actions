@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.8.17 - 2026-07-31
+
+- Exercise the native open.mp run path when the selected CLI supports it.
+- Use the runnable open.mp corpus fixture in compatibility checks.
+
 ## 1.8.16 - 2026-07-30
 
 - Promote the signed July 30 toolchain set.

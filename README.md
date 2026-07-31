@@ -122,7 +122,8 @@ checksum and version before adding the tool to `PATH`. Pawntest includes are
 installed beside its executable.
 
 `release-set-smoke.yml` installs the selected CLI archive on Linux, Windows,
-and macOS, then checks the small SA-MP and open.mp corpus projects.
+and macOS, then checks the small SA-MP and open.mp corpus projects. Releases
+with native runtime support also start the open.mp fixture on Linux.
 
 Use the `v1` tag for compatible fixes, or pin a full commit when every action
 update must be reviewed.
