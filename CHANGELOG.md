@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.24 - 2026-07-31
+
+- Use the tested July 31 toolchain release set by default.
+
 ## 1.8.23 - 2026-07-31
 
 - Install the 32-bit atomic runtime required by the open.mp Linux server.
