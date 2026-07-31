@@ -327,6 +327,12 @@ jobs:
             pawn run --project .pawnkit/corpus/projects/minimal-gamemode \
             > "${{ runner.temp }}/native-run.log" 2>&1 || true
           cat "${{ runner.temp }}/native-run.log"
+          {
+            echo '### Native open.mp smoke'
+            echo '```text'
+            cat "${{ runner.temp }}/native-run.log"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
           grep -q 'minimal-gamemode loaded' "${{ runner.temp }}/native-run.log"
       - name: Check diagnostic contract
         shell: bash

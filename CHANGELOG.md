@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.20 - 2026-07-31
+
+- Include captured native runtime output in the compatibility run summary.
+
 ## 1.8.19 - 2026-07-31
 
 - Check native runtime startup without depending on a platform-specific timeout
