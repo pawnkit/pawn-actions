@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.29 - 2026-08-01
+
+- Build and check the open.mp golden project in release-set smoke tests.
+
 ## 1.8.28 - 2026-08-01
 
 - Use the August 1 signed release set by default in smoke workflows.

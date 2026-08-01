@@ -190,19 +190,19 @@ jobs:
       - name: Check project health
         shell: bash
         run: |
-          for project in minimal-samp-gamemode filterscript-with-includes; do
+          for project in minimal-gamemode minimal-samp-gamemode filterscript-with-includes; do
             pawn doctor --project ".pawnkit/corpus/projects/$project"
           done
       - name: Check formatting
         shell: bash
         run: |
-          for project in minimal-samp-gamemode filterscript-with-includes; do
+          for project in minimal-gamemode minimal-samp-gamemode filterscript-with-includes; do
             pawn fmt --project ".pawnkit/corpus/projects/$project" --check
           done
       - name: Check lint
         shell: bash
         run: |
-          for project in minimal-samp-gamemode filterscript-with-includes; do
+          for project in minimal-gamemode minimal-samp-gamemode filterscript-with-includes; do
             pawn lint --project ".pawnkit/corpus/projects/$project"
           done
       - name: Check formatter writes
@@ -210,7 +210,7 @@ jobs:
         run: |
           formatted="$PWD/.pawnkit/formatted"
           mkdir -p "$formatted"
-          for project in minimal-samp-gamemode filterscript-with-includes; do
+          for project in minimal-gamemode minimal-samp-gamemode filterscript-with-includes; do
             path=".pawnkit/corpus/projects/$project"
             cp -R "$path" "$formatted/$project"
             pawn fmt --project "$formatted/$project"
@@ -290,6 +290,13 @@ jobs:
         run: go build -o "${{ runner.temp }}/pawn-run-fixture" ./tests/backendfixture
       - uses: ./.pawnkit/actions/build
         with:
+          project: .pawnkit/corpus/projects/minimal-gamemode
+          compiler: ${{ github.workspace }}/pawnc-3.10.10-linux/bin/pawncc
+          artifact: ${{ runner.temp }}/minimal-gamemode.amx
+          output: json
+          result-file: ${{ runner.temp }}/minimal-gamemode.json
+      - uses: ./.pawnkit/actions/build
+        with:
           project: .pawnkit/corpus/projects/minimal-samp-gamemode
           compiler: ${{ github.workspace }}/pawnc-3.10.10-linux/bin/pawncc
           artifact: ${{ runner.temp }}/minimal-samp-gamemode.amx
@@ -348,5 +355,6 @@ jobs:
       - name: Check diagnostic contract
         shell: bash
         run: |
+          grep -q '"schemaVersion": 2' "${{ runner.temp }}/minimal-gamemode.json"
           grep -q '"schemaVersion": 2' "${{ runner.temp }}/minimal-samp-gamemode.json"
           grep -q '"schemaVersion": 2' "${{ runner.temp }}/filterscript-with-includes.json"
