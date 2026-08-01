@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.8.30 - 2026-08-01
+
+- Use the August 1 trivia-reuse toolchain by default in release-set smoke
+  tests.
+
 ## 1.8.29 - 2026-08-01
 
 - Build and check the open.mp golden project in release-set smoke tests.
