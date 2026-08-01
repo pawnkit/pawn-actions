@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.8.31 - 2026-08-01
+
+- Use the signed August 1 release set with the latest linter and language
+  server performance fixes.
+
 ## 1.8.30 - 2026-08-01
 
 - Use the August 1 trivia-reuse toolchain by default in release-set smoke

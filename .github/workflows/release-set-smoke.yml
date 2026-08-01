@@ -19,7 +19,7 @@ on:
       set-path:
         description: Path below pawnkit-spec
         required: true
-        default: release-sets/toolchain-signed-2026-08-01-2.json
+        default: release-sets/toolchain-signed-2026-08-01-3.json
       corpus-ref:
         description: Exact pawn-corpus tag or commit
         required: true
@@ -42,8 +42,8 @@ permissions:
   attestations: read
   contents: read
 env:
-  SPEC_REF: ${{ inputs.spec-ref || 'v0.1.87' }}
-  SET_PATH: ${{ inputs.set-path || 'release-sets/toolchain-signed-2026-08-01-2.json' }}
+  SPEC_REF: ${{ inputs.spec-ref || 'v0.1.88' }}
+  SET_PATH: ${{ inputs.set-path || 'release-sets/toolchain-signed-2026-08-01-3.json' }}
   CORPUS_REF: ${{ inputs.corpus-ref || 'v0.1.20' }}
 jobs:
   validate:
