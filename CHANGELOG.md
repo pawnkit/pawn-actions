@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.28 - 2026-08-01
+
+- Use the August 1 signed release set by default in smoke workflows.
+
 ## 1.8.27 - 2026-08-01
 
 - Use the current spec release when the release-set smoke workflow runs from a
