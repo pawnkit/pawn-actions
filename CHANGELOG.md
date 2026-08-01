@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.8.36 - 2026-08-01
+
+- Use the workspace-incremental toolchain with pawnlsp 0.33.81 in smoke
+  workflows.
+
 ## 1.8.35 - 2026-08-01
 
 - Use the signed incremental toolchain with pawn-analysis 0.30.5 and pawnlsp
