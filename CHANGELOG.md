@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.8.26 - 2026-08-01
+
+- Use the corpus release that contains the latest executable test regression
+  fixture in release-set smoke tests.
+
 ## 1.8.25 - 2026-07-31
 
 - Let `pawn build` select or acquire the compiler when the build action does
