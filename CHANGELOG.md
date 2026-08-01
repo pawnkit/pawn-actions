@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.8.35 - 2026-08-01
+
+- Use the signed incremental toolchain with pawn-analysis 0.30.5 and pawnlsp
+  0.33.80 in smoke workflows.
+
 ## 1.8.34 - 2026-08-01
 
 - Use the signed toolchain with pawnlint 1.8.16 and pawnlsp 0.33.79 in smoke
