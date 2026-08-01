@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.8.41 - 2026-08-01
+
+- Use the signed toolchain with pawnlint 1.8.22 and pawnlsp 0.33.86 in smoke
+  workflows.
+
 ## 1.8.40 - 2026-08-01
 
 - Use the signed toolchain with pawnlint 1.8.21 and pawnlsp 0.33.85 in smoke
