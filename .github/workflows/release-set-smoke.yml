@@ -24,6 +24,16 @@ on:
         description: Exact pawn-corpus tag or commit
         required: true
         default: v0.1.20
+      verify-remote:
+        description: Verify tags, schemas, workflow evidence, and artifacts
+        required: false
+        default: true
+        type: boolean
+      verify-attestations:
+        description: Verify GitHub artifact attestations
+        required: false
+        default: true
+        type: boolean
   workflow_call:
     inputs:
       spec-ref:
@@ -38,6 +48,16 @@ on:
         description: Exact pawn-corpus tag or commit
         required: true
         type: string
+      verify-remote:
+        description: Verify tags, schemas, workflow evidence, and artifacts
+        required: false
+        default: true
+        type: boolean
+      verify-attestations:
+        description: Verify GitHub artifact attestations
+        required: false
+        default: true
+        type: boolean
 permissions:
   attestations: read
   contents: read
@@ -45,6 +65,8 @@ env:
   SPEC_REF: ${{ inputs.spec-ref || 'v0.1.99' }}
   SET_PATH: ${{ inputs.set-path || 'release-sets/toolchain-signed-2026-08-01-14.json' }}
   CORPUS_REF: ${{ inputs.corpus-ref || 'v0.1.20' }}
+  VERIFY_REMOTE: ${{ inputs.verify-remote == false && 'false' || 'true' }}
+  VERIFY_ATTESTATIONS: ${{ inputs.verify-attestations == false && 'false' || 'true' }}
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -68,8 +90,8 @@ jobs:
       - uses: ./.pawnkit/actions/release-set
         with:
           release-set: .pawnkit/spec/${{ env.SET_PATH }}
-          verify-remote: 'true'
-          verify-attestations: 'true'
+          verify-remote: ${{ env.VERIFY_REMOTE }}
+          verify-attestations: ${{ env.VERIFY_ATTESTATIONS }}
       - uses: ./.pawnkit/actions/release-set
         with:
           release-set: .pawnkit/spec/release-sets/dependency-preview-2026-07-25.json

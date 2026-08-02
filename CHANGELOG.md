@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.8.49 - 2026-08-02
+
+- Allow release-set smoke runs to validate a new candidate before its evidence
+  workflow exists.
+
 ## 1.8.48 - 2026-08-02
 
 - Update examples and the workflow template to PawnKit CLI v1.34.14.
