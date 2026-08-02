@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.43 - 2026-08-02
+
+- Update the documented PawnKit CLI download to v1.34.8.
+
 ## 1.8.42 - 2026-08-01
 
 - Use the corrected signed toolchain with pawnlint 1.8.22 and pawnlsp 0.33.86 in smoke workflows.
