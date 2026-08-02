@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.47 - 2026-08-02
+
+- Update examples and the workflow template to PawnKit CLI v1.34.13.
+
 ## 1.8.46 - 2026-08-02
 
 - Update the documented PawnKit CLI download to v1.34.11.
