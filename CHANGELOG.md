@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.50 - 2026-08-02
+
+- Use the August 2 signed toolchain by default in release-set smoke tests.
+
 ## 1.8.49 - 2026-08-02
 
 - Allow release-set smoke runs to validate a new candidate before its evidence
