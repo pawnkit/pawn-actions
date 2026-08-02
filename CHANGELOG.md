@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.51 - 2026-08-02
+
+- Use the August 2 patch release set by default in smoke workflows.
+
 ## 1.8.50 - 2026-08-02
 
 - Use the August 2 signed toolchain by default in release-set smoke tests.
