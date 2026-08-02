@@ -9,9 +9,9 @@ Start by installing a published `pawn` release, then run the check action:
 ```yaml
 - uses: pawnkit/pawn-actions/setup@v1
   with:
-    version: 1.34.13
-    download-url: https://github.com/pawnkit/pawnkit-cli/releases/download/v1.34.13/pawn-linux-amd64.tar.gz
-    sha256: b147f1423449c016570f819a81e4073464d19f87c2980121af75724e7f85e9e8
+    version: 1.34.14
+    download-url: https://github.com/pawnkit/pawnkit-cli/releases/download/v1.34.14/pawn-linux-amd64.tar.gz
+    sha256: 8e3004a689f9ef62a46bc5e108b045b133550bdb1769e951b6f41601c1c0b98a
 - uses: pawnkit/pawn-actions/check@v1
 ```
 
