@@ -1,8 +1,16 @@
 # Changelog
 
-## 1.8.44 - 2026-08-02
+## 1.8.46 - 2026-08-02
+
+- Update the documented PawnKit CLI download to v1.34.11.
+
+## 1.8.45 - 2026-08-02
 
 - Update the documented PawnKit CLI download to v1.34.10.
+
+## 1.8.44 - 2026-08-02
+
+- Update the documented PawnKit CLI download to v1.34.9.
 
 ## 1.8.43 - 2026-08-02
 
