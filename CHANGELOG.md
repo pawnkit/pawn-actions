@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.69 - 2026-08-03
+
+- Use signed toolchain set 33 in release-set smoke tests.
+
 ## 1.8.68 - 2026-08-03
 
 - Use signed toolchain set 32 in release-set smoke tests.
