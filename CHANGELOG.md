@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.8.76 - 2026-08-03
+
+### Compatibility
+
+- Use signed toolchain set 39 with the latest CLI, linter, and language server.
+
 ## 1.8.75 - 2026-08-03
 
 ### Compatibility
