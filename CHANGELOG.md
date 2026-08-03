@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.8.54 - 2026-08-03
+
+### Changed
+
+- Make the signed 2026-08-03 toolchain set the default smoke-test input.
+
 ## 1.8.53 - 2026-08-03
 
 - Use the signed August 3 toolchain set with pawnlsp 0.34.11 by default.
