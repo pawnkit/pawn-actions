@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.55 - 2026-08-03
+
+- Default release-set smoke tests to the signed set with pawnkit-cli 1.34.25.
+
 ## 1.8.54 - 2026-08-03
 
 ### Changed
