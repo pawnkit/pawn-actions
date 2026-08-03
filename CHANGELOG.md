@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.8.65 - 2026-08-03
+
+- Default release-set smoke tests to corrected signed set 29 with matching
+  module-graph metadata.
+
 ## 1.8.64 - 2026-08-03
 
 - Default release-set smoke tests to signed set 28 with pawnlint v1.8.49 and
