@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.67 - 2026-08-03
+
+- Use signed toolchain set 31 in release-set smoke tests.
+
 ## 1.8.66 - 2026-08-03
 
 - Default release-set smoke tests to signed set 30 with pawnlint v1.8.50 and
