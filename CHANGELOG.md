@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.8.58 - 2026-08-03
 
 - Add an opt-in release-set check for component and module-graph alignment.
 
