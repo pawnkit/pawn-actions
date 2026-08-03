@@ -71,13 +71,13 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
         with:
           repository: pawnkit/pawnkit-spec
           ref: ${{ env.SPEC_REF }}
           path: .pawnkit/spec
           persist-credentials: false
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
         with:
           repository: pawnkit/pawn-actions
           ref: ${{ github.workflow_sha }}
@@ -111,19 +111,19 @@ jobs:
             target: darwin-arm64
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
         with:
           repository: pawnkit/pawnkit-spec
           ref: ${{ env.SPEC_REF }}
           path: .pawnkit/spec
           persist-credentials: false
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
         with:
           repository: pawnkit/pawn-actions
           ref: ${{ github.workflow_sha }}
           path: .pawnkit/actions
           persist-credentials: false
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
         with:
           repository: pawnkit/pawn-corpus
           ref: ${{ env.CORPUS_REF }}
@@ -245,19 +245,19 @@ jobs:
     env:
       LD_LIBRARY_PATH: ${{ github.workspace }}/pawnc-3.10.10-linux/lib
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
         with:
           repository: pawnkit/pawnkit-spec
           ref: ${{ env.SPEC_REF }}
           path: .pawnkit/spec
           persist-credentials: false
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
         with:
           repository: pawnkit/pawn-actions
           ref: ${{ github.workflow_sha }}
           path: .pawnkit/actions
           persist-credentials: false
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
         with:
           repository: pawnkit/pawn-corpus
           ref: ${{ env.CORPUS_REF }}
