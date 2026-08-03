@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.8.73 - 2026-08-03
+
+- Default release-set smoke tests to signed toolchain set 36 from
+  `pawnkit-spec v0.1.138`.
+
 ## 1.8.72 - 2026-08-03
 
 - Default release-set smoke tests to `pawnkit-spec v0.1.137`.
