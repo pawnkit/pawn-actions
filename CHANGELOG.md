@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.82 - 2026-08-04
+
+- Default release-set smoke tests to corrected signed set 45.
+
 ## 1.8.81 - 2026-08-04
 
 - Default release-set smoke tests to signed set 44 with pawnlsp v0.34.47.
