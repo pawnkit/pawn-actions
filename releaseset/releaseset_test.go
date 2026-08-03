@@ -133,6 +133,32 @@ func TestValidateVersionTwoModuleGraph(t *testing.T) {
 	}
 }
 
+func TestValidateComponentModuleGraph(t *testing.T) {
+	t.Parallel()
+
+	component := Component{
+		Name:       "pawn",
+		Repository: "pawnkit/pawnkit-cli",
+		Version:    "v1.1.3",
+		Commit:     strings.Repeat("2", 40),
+	}
+	module := Module{
+		Repository: "pawnkit/pawnkit-cli",
+		Module:     "github.com/pawnkit/pawnkit-cli",
+		Version:    "v1.1.3",
+		Commit:     strings.Repeat("2", 40),
+	}
+	if err := ValidateComponentModuleGraph([]Component{component}, []Module{module}); err != nil {
+		t.Fatalf("ValidateComponentModuleGraph: %v", err)
+	}
+
+	module.Commit = strings.Repeat("3", 40)
+	if err := ValidateComponentModuleGraph([]Component{component}, []Module{module}); err == nil ||
+		!strings.Contains(err.Error(), "differs from module graph") {
+		t.Fatalf("ValidateComponentModuleGraph error = %v", err)
+	}
+}
+
 func TestValidateVersionThreeSupplyChainEvidence(t *testing.T) {
 	t.Parallel()
 

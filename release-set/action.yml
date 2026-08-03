@@ -10,6 +10,9 @@ inputs:
   verify-attestations:
     description: Cryptographically verify v3 artifact attestations
     default: 'false'
+  check-component-graph:
+    description: Check components against moduleGraph
+    default: 'false'
   component:
     description: Optional component artifact to select
     default: ''
@@ -46,6 +49,7 @@ runs:
         PAWN_RELEASE_SET: ${{ inputs.release-set }}
         PAWN_VERIFY_REMOTE: ${{ inputs.verify-remote }}
         PAWN_VERIFY_ATTESTATIONS: ${{ inputs.verify-attestations }}
+        PAWN_CHECK_COMPONENT_GRAPH: ${{ inputs.check-component-graph }}
         PAWN_COMPONENT: ${{ inputs.component }}
         PAWN_TARGET: ${{ inputs.target }}
       run: |
@@ -60,6 +64,9 @@ runs:
         fi
         if [ "$PAWN_VERIFY_ATTESTATIONS" = true ]; then
           args+=("-verify-attestations")
+        fi
+        if [ "$PAWN_CHECK_COMPONENT_GRAPH" = true ]; then
+          args+=("-check-component-graph")
         fi
         if [ -n "$PAWN_COMPONENT$PAWN_TARGET" ]; then
           args+=("-component" "$PAWN_COMPONENT" "-target" "$PAWN_TARGET" "-github-output" "$GITHUB_OUTPUT")

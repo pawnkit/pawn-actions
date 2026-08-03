@@ -31,6 +31,7 @@ func main() {
 	verify := flag.Bool("verify-artifacts", false, "download and verify release artifacts")
 	verifyRemote := flag.Bool("verify-remote", false, "verify tags, schemas, workflow evidence, and artifacts")
 	verifyAttestations := flag.Bool("verify-attestations", false, "cryptographically verify v3 artifact attestations")
+	checkComponentGraph := flag.Bool("check-component-graph", false, "check components against moduleGraph")
 	component := flag.String("component", "", "select an artifact from this component")
 	target := flag.String("target", "", "select an artifact for this target")
 	githubOutput := flag.String("github-output", "", "append the selected artifact to a GitHub output file")
@@ -42,12 +43,13 @@ func main() {
 		os.Exit(2)
 	}
 	options := runOptions{
-		verifyArtifacts:    *verify,
-		verifyRemote:       *verifyRemote,
-		verifyAttestations: *verifyAttestations,
-		component:          *component,
-		target:             *target,
-		githubOutput:       *githubOutput,
+		verifyArtifacts:     *verify,
+		verifyRemote:        *verifyRemote,
+		verifyAttestations:  *verifyAttestations,
+		checkComponentGraph: *checkComponentGraph,
+		component:           *component,
+		target:              *target,
+		githubOutput:        *githubOutput,
 	}
 	if err := run(flag.Arg(0), modules, options); err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -56,12 +58,13 @@ func main() {
 }
 
 type runOptions struct {
-	verifyArtifacts    bool
-	verifyRemote       bool
-	verifyAttestations bool
-	component          string
-	target             string
-	githubOutput       string
+	verifyArtifacts     bool
+	verifyRemote        bool
+	verifyAttestations  bool
+	checkComponentGraph bool
+	component           string
+	target              string
+	githubOutput        string
 }
 
 func run(path string, modules []string, options runOptions) error {
@@ -76,6 +79,11 @@ func run(path string, modules []string, options runOptions) error {
 	set, err := releaseset.Decode(file)
 	if err != nil {
 		return err
+	}
+	if options.checkComponentGraph {
+		if err := releaseset.ValidateComponentModuleGraph(set.Components, set.ModuleGraph); err != nil {
+			return err
+		}
 	}
 	goModules := make([]releaseset.GoModule, 0, len(modules))
 	for _, modulePath := range modules {

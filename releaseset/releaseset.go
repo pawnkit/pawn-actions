@@ -291,6 +291,33 @@ func validateModuleGraph(modules []Module) error {
 	return ValidateGoModuleGraph(graph)
 }
 
+// ValidateComponentModuleGraph checks released tools against the graph.
+func ValidateComponentModuleGraph(components []Component, modules []Module) error {
+	byVersion := make(map[string]Module, len(modules))
+	for _, module := range modules {
+		byVersion[module.Repository+"@"+module.Version] = module
+	}
+	for _, component := range components {
+		key := component.Repository + "@" + component.Version
+		module, ok := byVersion[key]
+		if !ok {
+			return fmt.Errorf(
+				"release set: component %q has no matching module graph entry",
+				component.Name,
+			)
+		}
+		if module.Commit != component.Commit {
+			return fmt.Errorf(
+				"release set: component %q commit %q differs from module graph commit %q",
+				component.Name,
+				component.Commit,
+				module.Commit,
+			)
+		}
+	}
+	return nil
+}
+
 func validateSource(source Source) error {
 	if !repoPattern.MatchString(source.Repository) || !commitPattern.MatchString(source.Commit) {
 		return errors.New("release set: invalid source")
