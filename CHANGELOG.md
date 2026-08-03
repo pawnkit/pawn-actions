@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.8.57 - 2026-08-03
+
+- Default release-set smoke tests to signed set 18 with pawnkit-cli v1.34.26
+  and pawnlsp v0.34.25.
+
 ## 1.8.56 - 2026-08-03
 
 - Default release-set smoke tests to corrected signed set 17.
