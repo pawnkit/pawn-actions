@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.53 - 2026-08-03
+
+- Use the signed August 3 toolchain set with pawnlsp 0.34.11 by default.
+
 ## 1.8.52 - 2026-08-03
 
 - Use the August 3 signed toolchain by default in release-set smoke tests.
