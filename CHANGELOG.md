@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.8.83 - 2026-08-04
+
+- Default release-set smoke tests to signed set 46 with aligned source and
+  evidence metadata.
+
 ## 1.8.82 - 2026-08-04
 
 - Default release-set smoke tests to corrected signed set 45.
