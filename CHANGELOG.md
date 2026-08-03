@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.8.66 - 2026-08-03
+
+- Default release-set smoke tests to signed set 30 with pawnlint v1.8.50 and
+  pawnlsp v0.34.33.
+
 ## 1.8.65 - 2026-08-03
 
 - Default release-set smoke tests to corrected signed set 29 with matching
