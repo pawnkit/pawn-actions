@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.8.75 - 2026-08-03
+
+### Compatibility
+
+- Use signed toolchain set 38 with the workspace semantic reuse releases.
+
 ## 1.8.74 - 2026-08-03
 
 - Default release-set smoke tests to signed toolchain set 37 from
