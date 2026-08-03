@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.8.59 - 2026-08-03
+
+- Default release-set smoke tests to signed set 23 with pawnlint v1.8.46 and
+  pawnlsp v0.34.29.
+
 ## 1.8.58 - 2026-08-03
 
 - Add an opt-in release-set check for component and module-graph alignment.
