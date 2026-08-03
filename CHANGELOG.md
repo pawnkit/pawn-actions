@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.78 - 2026-08-03
+
+- Use corrected signed toolchain set 41 in the release-set smoke workflow.
+
 ## 1.8.77 - 2026-08-03
 
 - Use signed toolchain set 40 in the release-set smoke workflow.
