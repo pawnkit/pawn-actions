@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.8.79 - 2026-08-04
+
+- Default release-set smoke tests to signed set 42 with the current CLI,
+  linter, and language server releases.
+
 ## 1.8.78 - 2026-08-03
 
 - Use corrected signed toolchain set 41 in the release-set smoke workflow.
